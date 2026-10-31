@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RAUS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#1c1c1e">
+<meta name="description" content="Was ziehe ich an? Sportoutfit nach Wetter für Rennvelo, Joggen und Schwimmen.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RAUS">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: eine Spalte, Telefon zuerst. Oben das Urteil (RAUS / VERSCHIEBEN), darunter Outfit, Hinweise, Details. */
+:root {
+  --bg: #1c1c1e;
+  --surface: #2a2a2d;
+  --line: #3a3a3f;
+  --fg: #ffffff;
+  --muted: #aeaeb2;
+  --pink: #ff2d55;
+  --cyan: #50e3e6;
+  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 16px/1.45 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+.app {
+  max-width: 520px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) max(32px, env(safe-area-inset-bottom, 0px));
+  display: grid;
+  gap: 20px;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+/* Kopf */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { font: 700 22px/1 var(--display); letter-spacing: .08em; color: var(--pink); }
+.where { color: var(--muted); font-size: 14px; text-align: right; }
+.iconbtn {
+  width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line);
+  background: transparent; display: grid; place-items: center; flex: none;
+}
+.iconbtn svg { width: 20px; height: 20px; }
+.top-actions { display: flex; gap: 8px; }
+
+/* Sportwahl */
+.seg {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px;
+  background: var(--surface); border-radius: 14px; padding: 4px;
+}
+.seg button {
+  border: 0; background: transparent; border-radius: 10px; padding: 10px 6px;
+  font-weight: 600; font-size: 15px; color: var(--muted);
+}
+.seg button[aria-pressed="true"] { background: var(--bg); color: var(--fg); }
+
+/* Urteil */
+.hero { display: grid; gap: 6px; }
+.hero-meta { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.hero-meta svg { width: 26px; height: 26px; color: var(--pink); }
+.temp { font: 600 44px/1 var(--display); color: var(--cyan); font-variant-numeric: tabular-nums; }
+.verdict {
+  font: 700 clamp(64px, 22vw, 112px)/.86 var(--display);
+  letter-spacing: -.01em; text-transform: uppercase; margin: 6px 0 0;
+}
+.verdict.go { color: var(--fg); }
+.verdict.stop { color: var(--pink); font-size: clamp(48px, 15vw, 80px); }
+.sub { color: var(--muted); margin: 0; }
+.status { font-size: 13px; color: var(--muted); }
+.status.warn { color: var(--pink); }
+
+/* Dauer */
+.duration { display: flex; align-items: center; gap: 10px; }
+.duration .label { color: var(--muted); font-size: 14px; flex: 1; }
+.step { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: transparent; font-size: 20px; line-height: 1; }
+.dur-val { min-width: 76px; text-align: center; font: 600 22px/1 var(--display); font-variant-numeric: tabular-nums; }
+
+/* Outfit */
+h2 { font: 600 13px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+.outfit { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.outfit li {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+  padding: 12px; border-radius: 14px; background: var(--surface);
+  font-weight: 500; font-size: 15px; line-height: 1.25;
+}
+.outfit li svg { width: 22px; height: 22px; flex: none; color: var(--fg); }
+.outfit li.rain svg { color: var(--cyan); }
+.outfit.dim li { opacity: .55; }
+
+/* Hinweise */
+.hints { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.hints li {
+  display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px;
+  border: 1px solid var(--cyan); border-radius: 12px; color: var(--cyan); font-size: 15px;
+}
+.hints li.stop { border-color: var(--pink); color: var(--pink); }
+.hints li svg { width: 20px; height: 20px; flex: none; margin-top: 1px; }
+
+/* Details */
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border-radius: 14px; overflow: hidden; }
+.fact { background: var(--bg); padding: 12px; }
+.fact dt { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+.fact dd { margin: 2px 0 0; font: 600 20px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+details { border-top: 1px solid var(--line); padding-top: 14px; }
+summary { color: var(--muted); font-size: 14px; cursor: pointer; }
+.fine { color: var(--muted); font-size: 13px; display: grid; gap: 8px; margin-top: 10px; }
+.fine p { margin: 0; }
+.fine a { color: var(--cyan); }
+
+/* Einstellungen */
+.sheet[hidden] { display: none !important; }
+.sheet { display: grid; gap: 22px; }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; }
+.sheet-head h1 { font: 700 30px/1 var(--display); margin: 0; letter-spacing: .02em; }
+.field { display: grid; gap: 8px; }
+.field > label, .field > .flabel { font-size: 14px; color: var(--muted); }
+.text {
+  width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--surface);
+}
+.results { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.results button {
+  width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: transparent;
+}
+.limits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.limits label { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+.primary {
+  border: 0; border-radius: 14px; padding: 14px; background: var(--cyan); color: #0d2b2c;
+  font-weight: 600; font-size: 16px;
+}
+.err { color: var(--pink); font-size: 14px; margin: 0; }
+
+@media (max-width: 360px) { .outfit, .facts, .limits { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: no-preference) {
+  .verdict { animation: rise .45s ease-out both; }
+  @keyframes rise { from { transform: translateY(8px); opacity: .4; } to { transform: none; opacity: 1; } }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <main id="main">
+    <div class="app" style="padding:0;gap:20px">
+      <header class="top">
+        <span class="brand">RAUS</span>
+        <div class="top-actions">
+          <button class="iconbtn" id="refresh" aria-label="Wetter neu laden"><svg data-i="refresh"></svg></button>
+          <button class="iconbtn" id="openSettings" aria-label="Einstellungen"><svg data-i="sliders"></svg></button>
+        </div>
+      </header>
+
+      <div class="seg" role="group" aria-label="Sportart" id="sportSeg">
+        <button data-sport="bike">Rennvelo</button>
+        <button data-sport="run">Joggen</button>
+        <button data-sport="swim">Schwimmen</button>
+      </div>
+
+      <section class="hero" aria-live="polite">
+        <div class="hero-meta">
+          <svg id="wxIcon" data-i="cloud"></svg>
+          <span class="temp" id="temp">–°</span>
+          <span id="wxLine"></span>
+        </div>
+        <p class="verdict go" id="verdict">Raus</p>
+        <p class="sub" id="sub">Lade Wetter …</p>
+        <span class="status" id="status"></span>
+      </section>
+
+      <div class="duration">
+        <span class="label">Dauer ab jetzt</span>
+        <button class="step" id="durMinus" aria-label="15 Minuten weniger">−</button>
+        <span class="dur-val" id="durVal">60 Min.</span>
+        <button class="step" id="durPlus" aria-label="15 Minuten mehr">+</button>
+      </div>
+
+      <section id="hintsWrap" hidden>
+        <h2>Hinweise</h2>
+        <ul class="hints" id="hints"></ul>
+      </section>
+
+      <section>
+        <h2 id="outfitTitle">Anziehen &amp; mitnehmen</h2>
+        <ul class="outfit" id="outfit"></ul>
+      </section>
+
+      <section id="factsWrap">
+        <h2>Im Trainingsfenster</h2>
+        <dl class="facts" id="facts"></dl>
+      </section>
+
+      <details>
+        <summary>So rechnet RAUS</summary>
+        <div class="fine" id="fine"></div>
+      </details>
+    </div>
+  </main>
+
+  <section class="sheet" id="settings" hidden aria-label="Einstellungen">
+    <div class="sheet-head">
+      <h1>Einstellungen</h1>
+      <button class="iconbtn" id="closeSettings" aria-label="Schliessen"><svg data-i="close"></svg></button>
+    </div>
+
+    <div class="field">
+      <label for="placeInput">Startort</label>
+      <input class="text" id="placeInput" type="search" autocomplete="off" placeholder="Ort oder Postleitzahl">
+      <ul class="results" id="placeResults"></ul>
+      <p class="err" id="placeErr" hidden></p>
+    </div>
+
+    <div class="field" id="kindField">
+      <span class="flabel">Schwimmen</span>
+      <div class="seg" role="group" aria-label="Wo schwimmst du?" id="kindSeg">
+        <button data-kind="indoor">Hallenbad</button>
+        <button data-kind="open">Freiwasser</button>
+      </div>
+    </div>
+
+    <div class="field" id="intensityField">
+      <span class="flabel">Joggen: Intensität</span>
+      <div class="seg" role="group" aria-label="Intensität" id="intSeg">
+        <button data-int="easy">Locker</button>
+        <button data-int="hard">Intensiv</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="flabel">Kälteempfinden</span>
+      <div class="seg" role="group" aria-label="Kälteempfinden" id="sensSeg">
+        <button data-sens="-3">Friere schnell</button>
+        <button data-sens="0">Normal</button>
+        <button data-sens="3">Schnell warm</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="flabel">Persönliche Warnschwellen</span>
+      <div class="limits">
+        <label for="limRain">Regen: drinnen ab (mm/h)<input class="text" id="limRain" inputmode="decimal"></label>
+        <label for="limGustWarn">Böen: Hinweis ab (km/h)<input class="text" id="limGustWarn" inputmode="numeric"></label>
+        <label for="limGustStop">Böen: verschieben ab (km/h)<input class="text" id="limGustStop" inputmode="numeric"></label>
+        <label for="limLight">Lichtpuffer (Min.)<input class="text" id="limLight" inputmode="numeric"></label>
+      </div>
+      <p class="err" id="limErr" hidden></p>
+    </div>
+
+    <button class="primary" id="saveSettings">Speichern</button>
+  </section>
+
+</div>
+
+<script>
+"use strict";
+
+// ---------- Konstanten (aus dem Scriptable-Skript übernommen) ----------
+const SPORT = { bike: "Rennvelo", run: "Joggen", swim: "Schwimmen" };
+const DEFAULTS = { rain: 5, gustWarn: 40, gustStop: 50, lightBuffer: 30 };
+const CURRENT = ["temperature_2m","apparent_temperature","precipitation","weather_code","wind_speed_10m","wind_gusts_10m","is_day"];
+const HOURLY = [...CURRENT, "precipitation_probability", "rain", "showers"];
+const KEY_SETTINGS = "raus.settings.v4";
+const KEY_CACHE = "raus.weather.v1";
+const IN_FRAME = window.self !== window.top;
+
+const DEFAULT_SETTINGS = {
+  version: 4, sport: "run", kind: "open", intensity: "easy",
+  place: { name: "Frauenfeld", latitude: 47.5536, longitude: 8.8987, timezone: "Europe/Zurich" },
+  duration: 60, sensitivity: 0, thresholds: { ...DEFAULTS }
+};
+
+// ---------- Icons ----------
+const I = {
+  refresh: "M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7",
+  sliders: "M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4",
+  close: "M6 6l12 12M18 6L6 18",
+  shirt: "M8 3 3 6l2 4 2-1v12h10V9l2 1 2-4-5-3a4 4 0 0 1-8 0Z",
+  pants: "M7 3h10l1 18h-4l-2-11-2 11H6Z",
+  glove: "M8 21v-6l-3-3 1.2-1.2L8 12V5.5a1.2 1.2 0 0 1 2.4 0V11V4.5a1.2 1.2 0 0 1 2.4 0V11V5.5a1.2 1.2 0 0 1 2.4 0V12V8.5a1.2 1.2 0 0 1 2.4 0V15c0 3.5-2 6-5 6Z",
+  cap: "M4 15a8 8 0 0 1 16 0ZM2 15h20v2H2Z",
+  jacket: "M9 3 4 6v15h5v-9M15 3l5 3v15h-5v-9M9 3c1 2 5 2 6 0M12 6v15",
+  shoe: "M3 17h18v-2l-6-2-2-4H8l-5 4ZM3 17v2h18v-2",
+  rain: "M7 15a4 4 0 0 1-.3-8A5.5 5.5 0 0 1 17 7.5 3.8 3.8 0 0 1 17 15ZM8 18l-1 3M12 18l-1 3M16 18l-1 3",
+  wind: "M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h7",
+  storm: "M7 14a4 4 0 0 1-.3-8A5.5 5.5 0 0 1 17 6.5 3.8 3.8 0 0 1 17 14M12 13l-2 4h4l-2 4",
+  light: "M8 2h8v5l-2 3v12h-4V10L8 7ZM12 14v2",
+  snow: "M12 2v20M4 7l16 10M20 7 4 17M9 3l3 2 3-2M9 21l3-2 3 2",
+  swim: "M2 19c2 0 2 1.5 5 1.5s3-1.5 5-1.5 3 1.5 5 1.5 3-1.5 5-1.5M7 14l5-5 3 3M16 7.5a2 2 0 1 0 0-.01",
+  goggles: "M2 12a3 3 0 0 0 3 3h2.5l2-2h5l2 2H19a3 3 0 0 0 0-6H5a3 3 0 0 0-3 3Z",
+  towel: "M5 3h14v18H5ZM5 8h14M9 13h6",
+  buoy: "M12 3a9 9 0 1 0 .01 0ZM12 8a4 4 0 1 0 .01 0ZM5.6 5.6l3.6 3.6M14.8 14.8l3.6 3.6M18.4 5.6l-3.6 3.6M9.2 14.8l-3.6 3.6",
+  scarf: "M6 4h12v4c0 2-3 3-6 3S6 10 6 8ZM10 11v9l3-2v-7",
+  waves: "M2 9c2 0 2 2 5 2s3-2 5-2 3 2 5 2 3-2 5-2M2 15c2 0 2 2 5 2s3-2 5-2 3 2 5 2 3-2 5-2",
+  moon: "M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10Z",
+  sun: "M12 7.5a4.5 4.5 0 1 0 .01 0ZM12 1.5v2M12 20.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1.5 12h2M20.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4",
+  cloud: "M7 18a5 5 0 0 1-.4-10A6 6 0 0 1 18 9a4.5 4.5 0 0 1-1 9Z",
+  cloudsun: "M8 3v1.5M3.5 8H2M4.5 4.5l1 1M11.5 4.5l-1 1M6 11a3 3 0 1 1 5-3M9 20a4 4 0 0 1-.3-8 5 5 0 0 1 9.4 1.5A3.3 3.3 0 0 1 18 20Z",
+  fog: "M7 12a4 4 0 0 1-.3-8A5.5 5.5 0 0 1 17 4.5M3 15h18M3 19h18M6 11h14",
+  warn: "M12 3 2 21h20ZM12 10v5M12 18h0"
+};
+const SYMBOL = {
+  "figure.pool.swim":"swim","figure.open.water.swim":"swim","eyeglasses":"goggles","square":"towel","shoe":"shoe",
+  "lifepreserver":"buoy","jacket":"jacket","tshirt":"shirt","figure.outdoor.cycle":"pants","figure.run":"pants",
+  "hand.raised":"glove","cap":"cap","wind":"wind","cloud.rain":"rain","cloud.rain.fill":"rain",
+  "cloud.bolt.rain.fill":"storm","snowflake":"snow","flashlight.on.fill":"light","cloud.snow.fill":"snow",
+  "moon.fill":"moon","water.waves":"waves","sun.max.fill":"sun","cloud.sun.fill":"cloudsun","cloud.moon.fill":"moon",
+  "cloud.fill":"cloud","cloud.fog.fill":"fog"
+};
+function svg(name) {
+  const d = I[SYMBOL[name] || name] || I.warn;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+}
+function paintIcon(el, name) { el.outerHTML = svg(name).replace("<svg", `<svg id="${el.id || ""}"`); }
+document.querySelectorAll("svg[data-i]").forEach(el => { el.outerHTML = svg(el.dataset.i); });
+
+// ---------- Speicher ----------
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (_) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} }
+};
+function limits(s) { return { ...DEFAULTS, ...(s.thresholds || {}) }; }
+function validLimits(t) {
+  return Number.isFinite(t.rain) && t.rain >= 0.5 && t.rain <= 30 &&
+    Number.isFinite(t.gustWarn) && t.gustWarn >= 10 && t.gustWarn <= 100 &&
+    Number.isFinite(t.gustStop) && t.gustStop > t.gustWarn && t.gustStop <= 120 &&
+    Number.isInteger(t.lightBuffer) && t.lightBuffer >= 0 && t.lightBuffer <= 120;
+}
+function loadSettings() {
+  const s = store.get(KEY_SETTINGS);
+  if (!s || !SPORT[s.sport] || !s.place || !Number.isFinite(s.place.latitude)) return structuredClone(DEFAULT_SETTINGS);
+  return { ...structuredClone(DEFAULT_SETTINGS), ...s, thresholds: limits(s) };
+}
+let S = loadSettings();
+function saveSettings() { store.set(KEY_SETTINGS, S); }
+
+// ---------- Netzwerk ----------
+function url(base, params) {
+  return base + "?" + Object.entries(params).map(([k, v]) => encodeURIComponent(k) + "=" + encodeURIComponent(v)).join("&");
+}
+async function getJSON(address) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 20000);
+  let r, data;
+  try {
+    r = await fetch(address, { signal: ctrl.signal, cache: "no-store" });
+    data = await r.json();
+  } catch (_) {
+    throw new Error("Wetterdienst nicht erreichbar. Bitte erneut versuchen.");
+  } finally { clearTimeout(timer); }
+  if (!data || data.error || !r.ok) throw new Error("Der Wetterdienst konnte die Anfrage nicht beantworten.");
+  return data;
+}
+async function fetchForecast(place) {
+  return getJSON(url("https://api.open-meteo.com/v1/forecast", {
+    latitude: place.latitude, longitude: place.longitude,
+    current: CURRENT.join(","), hourly: HOURLY.join(","), daily: "sunrise,sunset",
+    forecast_days: 3, timezone: place.timezone, timeformat: "unixtime",
+    temperature_unit: "celsius", wind_speed_unit: "kmh", precipitation_unit: "mm"
+  }));
+}
+
+// ---------- Wetter und Trainingszeitraum (unverändert portiert) ----------
+function summarize(data, s, start) {
+  const end = start + s.duration * 60;
+  const c = data.current, h = data.hourly, d = data.daily;
+  const bad = () => { throw new Error("Keine vollständigen, aktuellen Wetterdaten verfügbar."); };
+  if (!c || CURRENT.some(k => !Number.isFinite(c[k])) || !Number.isFinite(c.time) ||
+      start - c.time > 1800 || c.time > start + 300 || !h || !Array.isArray(h.time) ||
+      h.time.length < 2 || h.time[0] > start || h.time[h.time.length - 1] < end) bad();
+  if (h.time.some((t, i) => !Number.isFinite(t) || (i && t - h.time[i - 1] !== 3600))) bad();
+
+  const rows = [];
+  h.time.forEach((time, i) => {
+    if (time > start && time - 3600 < end) {
+      const r = { time };
+      HOURLY.forEach(k => { r[k] = h[k] && h[k][i]; });
+      rows.push(r);
+    }
+  });
+  if (!rows.length || rows.some(r => HOURLY.some(k => !Number.isFinite(r[k])))) bad();
+
+  const points = [c, ...rows];
+  const max = k => Math.max(...points.map(r => r[k]));
+  const min = k => Math.min(...points.map(r => r[k]));
+  const sunOK = d && Array.isArray(d.sunrise) && Array.isArray(d.sunset) &&
+    d.sunrise.length === d.sunset.length && d.sunrise.length > 0 &&
+    d.sunrise.every((v, i) => Number.isFinite(v) && Number.isFinite(d.sunset[i]) && v < d.sunset[i]);
+  const daylightOnly = sunOK && d.sunrise.some((rise, i) => start >= rise && end < d.sunset[i] - limits(s).lightBuffer * 60);
+
+  return {
+    current: c, start, end, sunOK,
+    light: !daylightOnly || c.is_day === 0,
+    feel: min("apparent_temperature"), min: min("temperature_2m"), max: max("temperature_2m"),
+    wind: max("wind_speed_10m"), gust: max("wind_gusts_10m"),
+    rainRate: Math.max(...rows.map(r => r.rain + r.showers)),
+    rainChance: Math.max(...rows.map(r => r.precipitation_probability)),
+    wet: points.some(r => r.precipitation > 0),
+    storm: points.some(r => [95, 96, 99].includes(r.weather_code)),
+    fog: points.some(r => [45, 48].includes(r.weather_code)),
+    ice: points.some(r => [56, 57, 66, 67].includes(r.weather_code)) ||
+      (min("temperature_2m") <= 1 && points.some(r => r.precipitation > 0)),
+    snow: points.some(r => [71, 73, 75, 77, 85, 86].includes(r.weather_code))
+  };
+}
+
+// ---------- Empfehlungen (unverändert portiert) ----------
+function recommend(s, w) {
+  const items = [], hints = [];
+  const add = (symbol, short, full = short, priority = 5) => items.push({ symbol, short, full, priority });
+  const hint = (symbol, short, full, stop = false) => hints.push({ symbol, short, full, stop });
+
+  if (s.sport === "swim" && s.kind === "indoor") {
+    add("figure.pool.swim", "Badekleidung", "Badeanzug oder Badehose", 1);
+    add("eyeglasses", "Brille + Kappe", "Schwimmbrille und Badekappe", 2);
+    add("square", "Handtuch", "Handtuch und trockene Kleidung", 3);
+    add("shoe", "Badeschuhe", "Badeschuhe", 4);
+    return { items, hints, stop: false };
+  }
+
+  const t = limits(s);
+  if (w.storm) hint("cloud.bolt.rain.fill", "Gewitter: verschieben", "Gewitter im Prognosefenster: Outdoor-Training verschieben.", true);
+  if (w.gust >= t.gustStop) hint("wind", "Böen: verschieben", "Böen bis " + Math.round(w.gust) + " km/h: besser drinnen trainieren.", true);
+  if (w.rainRate >= t.rain) hint("cloud.rain.fill", "Regen: lieber drinnen", "Kräftiger Regen bis " + w.rainRate.toFixed(1) + " mm in einer Stunde: besser drinnen trainieren.", true);
+  if (w.ice) hint("snowflake", "Glätte: verschieben", "Mögliche Glätte oder gefrierender Niederschlag: Outdoor-Training verschieben.", true);
+  if (w.gust >= t.gustWarn && w.gust < t.gustStop) hint("wind", "Böen: Strecke prüfen", "Starke Böen: Wald und exponierte Strecken meiden.");
+  if (s.sport !== "swim" && (w.light || (s.sport === "bike" && (w.wet || w.fog)))) {
+    hint("flashlight.on.fill",
+      s.sport === "bike" ? "Licht mitnehmen" : "Licht + Reflektoren",
+      s.sport === "bike" ? "Vorder- und Rücklicht mitnehmen und bei schlechter Sicht einschalten."
+                         : "Lauflampe und reflektierende Kleidung oder Leuchtbänder mitnehmen.");
+  }
+  if (w.snow) hint("cloud.snow.fill", "Schnee: Weg prüfen", "Schnee erwartet: Wegzustand und Trittsicherheit prüfen.");
+  if (w.wet || w.rainChance >= 40) hint("cloud.rain.fill", "Regen erwartet", "Regen möglich oder erwartet; Kleidung und Strecke anpassen.");
+
+  if (s.sport === "swim") {
+    add("figure.open.water.swim", "Badekleidung", "Badeanzug oder Badehose", 1);
+    add("eyeglasses", "Brille + Kappe", "Schwimmbrille und Badekappe", 2);
+    add("lifepreserver", "Schwimmboje", "Gut sichtbare Schwimmboje", 3);
+    add("jacket", "Trockene Kleidung", "Handtuch und warme, trockene Kleidung für danach", 4);
+    if (w.light) hint("moon.fill", "Dunkel: verschieben", "Freiwasserschwimmen bei Dunkelheit besser verschieben.", true);
+    if (w.wind >= 20 || w.gust >= 35) hint("water.waves", "Wasserlage prüfen", "Wind, Wellen und lokale Hinweise prüfen.");
+  } else {
+    const temp = w.feel + s.sensitivity + (s.sport === "bike" ? -2 : s.intensity === "hard" ? 5 : 2);
+    if (s.sport === "bike") {
+      add("tshirt",
+        temp < 5 ? "Thermotrikot" : temp < 13 ? "Langarmtrikot" : temp < 18 ? "Trikot + Armlinge" : "Kurzarmtrikot",
+        temp < 5 ? "Thermo-Langarmtrikot und Baselayer" : temp < 13 ? "Langarmtrikot" : temp < 18 ? "Kurzarmtrikot und Armlinge" : "Kurzarmtrikot", 1);
+      add("figure.outdoor.cycle",
+        temp < 10 ? "Lange Velohose" : temp < 16 ? "Hose + Beinlinge" : "Kurze Velohose",
+        temp < 10 ? "Lange Velohose" : temp < 16 ? "Kurze Velohose und Beinlinge" : "Kurze Velohose", 2);
+      add("hand.raised",
+        temp < 6 ? "Warme Handschuhe" : temp < 14 ? "Lange Handschuhe" : "Kurze Handschuhe",
+        temp < 6 ? "Warme Langfingerhandschuhe" : temp < 14 ? "Dünne Langfingerhandschuhe" : "Kurze Velohandschuhe", 5);
+      if (temp < 10) add("cap", "Unterziehkappe", "Dünne Kappe unter dem Helm", 6);
+      if (temp < 10 || w.wet) add("shoe", "Überschuhe", temp < 5 ? "Warme Überschuhe" : "Leichte Überschuhe", 6);
+      if (temp < 18 || w.wind >= 20) add("jacket", temp < 5 ? "Winterjacke" : "Windweste", temp < 5 ? "Winddichte Winterjacke" : "Windweste für Wind und Abfahrten", 4);
+    } else {
+      // Joggen: persönliche Oberteil-Regeln nach tiefster tatsächlicher Temperatur.
+      add("tshirt", w.min <= 17 ? "Langarmshirt" : "Kurzarmshirt", w.min <= 17 ? "Langarm-Laufshirt" : "Kurzarm-Laufshirt", 1);
+      add("figure.run", temp < 11 ? "Trainerhose" : "Laufshorts", temp < 11 ? "Lange Trainerhose" : "Laufshorts", 2);
+      if (w.min < 10) add("jacket", "Hoodie", "Sport-Hoodie über dem Langarmshirt", 3);
+      if (temp < 10) add("hand.raised", "Handschuhe", temp < 4 ? "Warme Laufhandschuhe" : "Dünne Laufhandschuhe", 5);
+      if (temp < 11 || w.wet) add("cap", temp < 5 ? "Mütze" : temp < 11 ? "Stirnband" : "Laufkappe");
+      if (temp < 3 || w.wind >= 20) add("jacket", "Windjacke", "Leichte, atmungsaktive Windjacke", 4);
+    }
+    if (temp < 10 && w.wind >= 15) add("wind", "Halstuch", "Dünnes Halstuch als Windschutz", 6);
+    if (w.wet || w.rainChance >= 40) add("cloud.rain", "Regenjacke", "Leichte Regenjacke", 0);
+  }
+
+  items.sort((a, b) => a.priority - b.priority);
+  hints.sort((a, b) => Number(b.stop) - Number(a.stop));
+  return { items, hints, stop: hints.some(h => h.stop) };
+}
+
+// ---------- Hilfen ----------
+function clock(epoch) {
+  return new Intl.DateTimeFormat("de-CH", { timeZone: S.place.timezone, hour: "2-digit", minute: "2-digit" }).format(new Date(epoch * 1000));
+}
+function weatherSymbol(code, day) {
+  if (code >= 95) return "cloud.bolt.rain.fill";
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return "cloud.snow.fill";
+  if (code >= 51) return "cloud.rain.fill";
+  if (code >= 45) return "cloud.fog.fill";
+  if (code === 3) return "cloud.fill";
+  if (code > 0) return day ? "cloud.sun.fill" : "cloud.moon.fill";
+  return day ? "sun.max.fill" : "moon.fill";
+}
+function weatherWord(code) {
+  if (code >= 95) return "Gewitter";
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return "Schnee";
+  if (code >= 80) return "Schauer";
+  if (code >= 61) return "Regen";
+  if (code >= 51) return "Niesel";
+  if (code >= 45) return "Nebel";
+  if (code === 3) return "Bedeckt";
+  if (code > 0) return "Wolkig";
+  return "Klar";
+}
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// Beispielprognose nur für die Vorschau in einem Rahmen, wo kein Netz erlaubt ist.
+function sampleData() {
+  const now = Math.floor(Date.now() / 1000);
+  const c0 = now - (now % 900);
+  const h0 = now - (now % 3600) - 3600;
+  const time = Array.from({ length: 48 }, (_, i) => h0 + i * 3600);
+  const temps = time.map((_, i) => 9 - i * 0.3);
+  const day0 = h0 - ((h0 + 3600) % 86400);
+  return {
+    current: { time: c0, temperature_2m: 9, apparent_temperature: 6.5, precipitation: 0, weather_code: 3, wind_speed_10m: 14, wind_gusts_10m: 31, is_day: 1 },
+    hourly: {
+      time, temperature_2m: temps, apparent_temperature: temps.map(t => t - 2.5),
+      precipitation: time.map((_, i) => i === 3 ? 0.2 : 0), weather_code: time.map((_, i) => i === 3 ? 61 : 3),
+      wind_speed_10m: time.map(() => 15), wind_gusts_10m: time.map(() => 32), is_day: time.map(() => 1),
+      precipitation_probability: time.map((_, i) => i < 2 ? 20 : 45), rain: time.map((_, i) => i === 3 ? 0.2 : 0), showers: time.map(() => 0)
+    },
+    daily: { sunrise: [day0 + 7 * 3600, day0 + 31 * 3600, day0 + 55 * 3600], sunset: [day0 + 17 * 3600, day0 + 41 * 3600, day0 + 65 * 3600] }
+  };
+}
+
+// ---------- Zustand und Ablauf ----------
+let raw = null;        // { data, fetchedAt, placeKey, source }
+let loading = false;
+const placeKey = p => p.latitude.toFixed(3) + "," + p.longitude.toFixed(3);
+
+function cachedRaw() {
+  const c = store.get(KEY_CACHE);
+  return c && c.placeKey === placeKey(S.place) && c.data ? { ...c, source: "cache" } : null;
+}
+
+async function refresh(force = false) {
+  if (S.sport === "swim" && S.kind === "indoor") { render(); return; }
+  if (loading) return;
+  const fresh = raw && raw.source === "live" && raw.placeKey === placeKey(S.place) && Date.now() - raw.fetchedAt < 10 * 60000;
+  if (fresh && !force) { render(); return; }
+  loading = true;
+  $("refresh").setAttribute("aria-busy", "true");
+  if (!raw) raw = cachedRaw();
+  render();
+  try {
+    const data = await fetchForecast(S.place);
+    raw = { data, fetchedAt: Date.now(), placeKey: placeKey(S.place), source: "live" };
+    store.set(KEY_CACHE, { data, fetchedAt: raw.fetchedAt, placeKey: raw.placeKey });
+    raw.error = null;
+  } catch (e) {
+    const fallback = cachedRaw();
+    if (fallback) raw = { ...fallback, error: e.message };
+    else if (IN_FRAME) raw = { data: sampleData(), fetchedAt: Date.now(), placeKey: placeKey(S.place), source: "sample" };
+    else raw = { data: null, error: e.message, source: "none" };
+  } finally {
+    loading = false;
+    $("refresh").removeAttribute("aria-busy");
+    render();
+  }
+}
+
+function compute() {
+  if (S.sport === "swim" && S.kind === "indoor") {
+    return { w: null, rec: recommend(S, null), start: Date.now() / 1000, stale: false };
+  }
+  if (!raw || !raw.data) return null;
+  const now = Date.now() / 1000;
+  try {
+    const w = summarize(raw.data, S, now);
+    return { w, rec: recommend(S, w), start: now, stale: false };
+  } catch (_) {
+    // Ältere Daten: Empfehlung für den Zeitpunkt der letzten Abfrage zeigen.
+    try {
+      const t = raw.data.current.time;
+      const w = summarize(raw.data, S, t);
+      return { w, rec: recommend(S, w), start: t, stale: true };
+    } catch (e) { return { error: e.message }; }
+  }
+}
+
+function render() {
+  // Steuerelemente
+  document.querySelectorAll("#sportSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sport === S.sport)));
+  $("durVal").textContent = S.duration + " Min.";
+
+  const m = compute();
+  const hero = $("verdict"), sub = $("sub"), status = $("status");
+  status.className = "status";
+
+  if (!m || m.error) {
+    $("temp").textContent = "–°";
+    $("wxLine").textContent = S.place.name;
+    hero.textContent = loading ? "…" : "Kein Wetter";
+    hero.className = "verdict stop";
+    sub.textContent = loading ? "Lade Wetter für " + S.place.name + " …" : (raw && raw.error) || (m && m.error) || "Noch keine Daten.";
+    status.textContent = loading ? "" : "Mit Netz neu laden.";
+    $("outfit").innerHTML = ""; $("hintsWrap").hidden = true; $("factsWrap").hidden = true;
+    $("fine").innerHTML = fineText(null);
+    return;
+  }
+
+  const { w, rec, start, stale } = m;
+  const end = start + S.duration * 60;
+
+  if (w) {
+    const iconEl = $("wxIcon");
+    iconEl.outerHTML = svg(weatherSymbol(w.current.weather_code, w.current.is_day)).replace("<svg", '<svg id="wxIcon"');
+    $("temp").textContent = Math.round(w.current.temperature_2m) + "°";
+    $("wxLine").textContent = weatherWord(w.current.weather_code) + " · Wind " + Math.round(w.current.wind_speed_10m) + " km/h · " + S.place.name;
+  } else {
+    $("wxIcon").outerHTML = svg("swim").replace("<svg", '<svg id="wxIcon"');
+    $("temp").textContent = "Hallenbad";
+    $("wxLine").textContent = "";
+  }
+
+  if (rec.stop) {
+    hero.textContent = "Verschieben";
+    hero.className = "verdict stop";
+    sub.textContent = "Outdoor-Training ist nicht empfohlen. " + rec.hints[0].full;
+  } else {
+    hero.textContent = "Raus";
+    hero.className = "verdict go";
+    sub.textContent = SPORT[S.sport] + " " + clock(start) + "–" + clock(end) + ". Das passt, so ziehst du dich an:";
+  }
+
+  // Status
+  if (raw && raw.source === "sample") {
+    status.textContent = "Beispieldaten · in der Vorschau ist kein Wetterdienst erreichbar";
+    status.className = "status warn";
+  } else if (w && (stale || (raw && raw.error))) {
+    status.textContent = "Offline · Stand " + clock(w.current.time) + (stale ? " · Empfehlung für diesen Zeitpunkt" : "");
+    status.className = "status warn";
+  } else if (w) {
+    status.textContent = (loading ? "Aktualisiere … " : "") + "Wetterstand " + clock(w.current.time);
+  } else {
+    status.textContent = S.duration + " Minuten";
+  }
+
+  // Outfit
+  $("outfitTitle").textContent = rec.stop ? "Falls du trotzdem gehst" : "Anziehen & mitnehmen";
+  $("outfit").className = "outfit" + (rec.stop ? " dim" : "");
+  $("outfit").innerHTML = rec.items.map(i =>
+    `<li class="${i.symbol.startsWith("cloud.rain") ? "rain" : ""}">${svg(i.symbol)}<span>${esc(i.full)}</span></li>`).join("");
+
+  // Hinweise
+  $("hintsWrap").hidden = !rec.hints.length;
+  $("hints").innerHTML = rec.hints.map(h => `<li class="${h.stop ? "stop" : ""}">${svg(h.symbol)}<span>${esc(h.full)}</span></li>`).join("");
+
+  // Fakten
+  $("factsWrap").hidden = !w;
+  if (w) {
+    $("facts").innerHTML = [
+      ["Temperatur", Math.round(w.min) + "–" + Math.round(w.max) + " °C"],
+      ["Gefühlt min.", Math.round(w.feel) + " °C"],
+      ["Wind / Böen", Math.round(w.wind) + " / " + Math.round(w.gust) + " km/h"],
+      ["Regen", w.rainRate.toFixed(1) + " mm/h · " + Math.round(w.rainChance) + " %"]
+    ].map(([k, v]) => `<div class="fact"><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  }
+  $("fine").innerHTML = fineText(w);
+}
+
+function fineText(w) {
+  const t = limits(S);
+  const p = [];
+  if (S.sport === "run") {
+    p.push("Deine Jogging-Regeln: über 17 °C Kurzarmshirt, 10 bis 17 °C Langarmshirt, unter 10 °C Langarmshirt und Hoodie. Für das Oberteil zählt die tiefste tatsächliche Temperatur im Fenster. Die Hose richtet sich nach der angepassten Kleidungstemperatur mit Kälteempfinden und Intensität.");
+  }
+  p.push("Persönliche Schwellen: Regen ab " + t.rain + " mm/h drinnen, Böen-Hinweis ab " + t.gustWarn + " km/h, verschieben ab " + t.gustStop + " km/h, Lichtpuffer " + t.lightBuffer + " Minuten vor Sonnenuntergang. Eigene Vorsichtsregeln, keine offiziellen Sicherheitsgrenzen.");
+  p.push("Stündliche Prognosen am gewählten Ort, kein Regenradar und keine amtlichen Warnungen. Alle überlappenden Stunden zählen mit, auch die angrenzende Endstunde. Keine Routenprüfung: Gelände, Sicht und Untergrund selbst beachten.");
+  if (w && !w.sunOK) p.push("Sonnenzeiten fehlen: Licht wird vorsorglich empfohlen.");
+  p.push("Bei Donner Schutz in einem festen Gebäude suchen und mindestens 30 Minuten nach dem letzten Donner warten.");
+  if (S.sport === "swim" && S.kind !== "indoor") p.push("Die Lufttemperatur ersetzt keine Wassertemperatur. Wassertemperatur, Strömung und lokale Bedingungen prüfen. Neoprenbedarf und sichere Schwimmdauer werden nicht beurteilt.");
+  p.push('Kleidung sind Komfort-Faustregeln. Wetter: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> · Orte: GeoNames');
+  return p.map(x => `<p>${x}</p>`).join("");
+}
+
+// ---------- Hauptansicht: Interaktion ----------
+$("sportSeg").addEventListener("click", e => {
+  const b = e.target.closest("button[data-sport]");
+  if (!b) return;
+  S.sport = b.dataset.sport; saveSettings(); refresh();
+});
+function setDuration(n) {
+  S.duration = Math.min(720, Math.max(15, n)); saveSettings(); render();
+}
+$("durMinus").addEventListener("click", () => setDuration(S.duration - 15));
+$("durPlus").addEventListener("click", () => setDuration(S.duration + 15));
+$("refresh").addEventListener("click", () => refresh(true));
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") refresh(); });
+
+// ---------- Einstellungen ----------
+let draft = null;
+function segSync() {
+  document.querySelectorAll("#kindSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.kind === draft.kind)));
+  document.querySelectorAll("#intSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.int === draft.intensity)));
+  document.querySelectorAll("#sensSeg button").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.sens) === draft.sensitivity)));
+}
+function openSettings() {
+  draft = structuredClone(S);
+  $("placeInput").value = draft.place.name;
+  $("placeResults").innerHTML = ""; $("placeErr").hidden = true; $("limErr").hidden = true;
+  const t = limits(draft);
+  $("limRain").value = String(t.rain).replace(".", ",");
+  $("limGustWarn").value = t.gustWarn; $("limGustStop").value = t.gustStop; $("limLight").value = t.lightBuffer;
+  segSync();
+  $("main").hidden = true; $("settings").hidden = false; window.scrollTo(0, 0);
+}
+function closeSettings() { $("settings").hidden = true; $("main").hidden = false; }
+$("openSettings").addEventListener("click", openSettings);
+$("closeSettings").addEventListener("click", closeSettings);
+$("kindSeg").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { draft.kind = b.dataset.kind; segSync(); } });
+$("intSeg").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { draft.intensity = b.dataset.int; segSync(); } });
+$("sensSeg").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { draft.sensitivity = Number(b.dataset.sens); segSync(); } });
+
+let searchTimer = null;
+$("placeInput").addEventListener("input", e => {
+  clearTimeout(searchTimer);
+  const name = e.target.value.trim();
+  $("placeErr").hidden = true;
+  if (name.length < 2) { $("placeResults").innerHTML = ""; return; }
+  searchTimer = setTimeout(async () => {
+    try {
+      const d = await getJSON(url("https://geocoding-api.open-meteo.com/v1/search", { name, count: 6, language: "de", format: "json" }));
+      const res = (d.results || []).filter(p => p.timezone);
+      if (!res.length) { $("placeResults").innerHTML = ""; $("placeErr").textContent = "Kein Treffer. Bitte einen anderen Ort eingeben."; $("placeErr").hidden = false; return; }
+      $("placeResults").innerHTML = res.map((p, i) =>
+        `<li><button type="button" data-i="${i}">${esc([p.name, p.admin1, p.country].filter(Boolean).join(", "))}</button></li>`).join("");
+      $("placeResults").onclick = ev => {
+        const b = ev.target.closest("button"); if (!b) return;
+        const p = res[Number(b.dataset.i)];
+        draft.place = { name: p.name, latitude: p.latitude, longitude: p.longitude, timezone: p.timezone };
+        $("placeInput").value = p.name; $("placeResults").innerHTML = "";
+      };
+    } catch (err) {
+      $("placeErr").textContent = "Ortssuche braucht Netz. " + err.message; $("placeErr").hidden = false;
+    }
+  }, 300);
+});
+
+$("saveSettings").addEventListener("click", () => {
+  const num = id => Number($(id).value.trim().replace(",", "."));
+  const t = { rain: num("limRain"), gustWarn: num("limGustWarn"), gustStop: num("limGustStop"), lightBuffer: num("limLight") };
+  if (!validLimits(t)) {
+    $("limErr").textContent = "Bitte prüfen: Regen 0,5–30. Böenhinweis 10–100. Verschieben höher als Hinweis, maximal 120. Lichtpuffer 0–120 ganze Minuten.";
+    $("limErr").hidden = false; return;
+  }
+  const placeChanged = placeKey(draft.place) !== placeKey(S.place);
+  S = { ...draft, thresholds: t };
+  saveSettings();
+  if (placeChanged) raw = null;
+  closeSettings();
+  refresh(placeChanged);
+});
+
+// ---------- Start ----------
+render();
+refresh();
+if ("serviceWorker" in navigator && !IN_FRAME) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
