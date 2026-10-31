@@ -11,7 +11,7 @@ Welche Kleidung passt zum Wetter? RAUS empfiehlt sie für Rennvelo, Joggen und S
 Die Vercel-URL in Safari öffnen, auf «Teilen» tippen, dann «Zum Home-Bildschirm».
 
 ## Dateien
-- `index.html` – komplette App (UI und Logik)
+- `raus-index.html` – komplette App (UI und Logik)
 - `sw.js` – Offline-App-Shell; die letzte Prognose speichert die App selbst
 - `manifest.webmanifest`, Icons – Installation als App
 - `vercel.json` – richtige Header für Service Worker und Manifest
