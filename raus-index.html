@@ -5,232 +5,245 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RAUS</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="theme-color" content="#1c1c1e">
+<meta name="theme-color" content="#eef0f6">
 <meta name="description" content="Was ziehe ich an? Sportoutfit nach Wetter für Rennvelo, Joggen und Schwimmen.">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="RAUS">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
 <style>
-/* Layout: eine Spalte, Telefon zuerst. Oben das Urteil (RAUS / VERSCHIEBEN), darunter Outfit, Hinweise, Details. */
+/* Layout: eine Spalte, Telefon zuerst. Blaue Wetterkarte, runde Sport-Buttons, Urteilskarte, Stundenleiste, Outfit-Liste, Werte. */
 :root {
-  --bg: #1c1c1e;
-  --surface: #2a2a2d;
-  --line: #3a3a3f;
-  --fg: #ffffff;
-  --muted: #aeaeb2;
-  --pink: #ff2d55;
-  --cyan: #50e3e6;
-  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
-  --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
-  color-scheme: dark;
+  --bg: #eef0f6;
+  --card: #ffffff;
+  --ink: #14161f;
+  --muted: #8a90a6;
+  --line: #e6e8f0;
+  --blue: #2747e8;
+  --blue-soft: #e9edff;
+  --blue-pale: #cdd6ff;
+  --yellow: #ffd23f;
+  --yellow-soft: #fff3c4;
+  --red: #ff3b5c;
+  --red-soft: #ffe1e7;
+  --sun: #ffc21a;
+  --shadow: 0 10px 24px rgba(39, 71, 232, .08);
+  --shadow-blue: 0 14px 30px rgba(39, 71, 232, .32);
+  --font: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { min-height: 100%; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--fg);
-  font: 400 16px/1.45 var(--body);
-  -webkit-font-smoothing: antialiased;
-}
-.app {
-  max-width: 520px;
-  margin: 0 auto;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: max(16px, env(safe-area-inset-top, 0px)) max(32px, env(safe-area-inset-bottom, 0px));
-  display: grid;
-  gap: 20px;
-}
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 15px/1.45 var(--font); -webkit-font-smoothing: antialiased; }
 button, input { font: inherit; color: inherit; }
-button { cursor: pointer; }
-:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+svg { display: block; }
+
+.app {
+  max-width: 520px; margin: 0 auto;
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) max(32px, env(safe-area-inset-bottom, 0px));
+}
+.view { display: grid; gap: 16px; }
+.card { background: var(--card); border-radius: 20px; box-shadow: var(--shadow); }
 
 /* Kopf */
-.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.brand { font: 700 22px/1 var(--display); letter-spacing: .08em; color: var(--pink); }
-.where { color: var(--muted); font-size: 14px; text-align: right; }
-.iconbtn {
-  width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line);
-  background: transparent; display: grid; place-items: center; flex: none;
-}
-.iconbtn svg { width: 20px; height: 20px; }
-.top-actions { display: flex; gap: 8px; }
+.top { display: flex; align-items: center; gap: 10px; }
+.logo { font-weight: 800; font-size: 22px; letter-spacing: .06em; color: var(--blue); }
+.place { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.place svg { flex: none; }
+.rbtn { width: 42px; height: 42px; flex: none; border: 0; border-radius: 50%; background: var(--card); display: grid; place-items: center; box-shadow: 0 6px 16px rgba(39, 71, 232, .12); color: var(--blue); }
+.rbtn svg { width: 20px; height: 20px; }
+.rbtn[aria-busy="true"] svg { animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* Sportwahl */
-.seg {
-  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px;
-  background: var(--surface); border-radius: 14px; padding: 4px;
-}
-.seg button {
-  border: 0; background: transparent; border-radius: 10px; padding: 10px 6px;
-  font-weight: 600; font-size: 15px; color: var(--muted);
-}
-.seg button[aria-pressed="true"] { background: var(--bg); color: var(--fg); }
+/* Wetterkarte */
+.hero { background: var(--blue); color: #fff; border-radius: 22px; padding: 18px 20px 20px; box-shadow: var(--shadow-blue); }
+.pill { display: inline-block; background: #fff; color: var(--ink); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 6px; }
+.hero-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.hero-icon svg { width: 112px; height: 84px; }
+.hero-temp { text-align: right; min-width: 0; }
+.big { font-size: 72px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.big.word { font-size: 32px; font-weight: 700; }
+.hero-sub { font-size: 13px; opacity: .88; margin-top: 6px; }
+
+/* Sportarten */
+.sports { display: flex; justify-content: space-between; padding: 0 4px; }
+.sport { border: 0; background: none; padding: 0; display: grid; justify-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: .08em; color: var(--muted); }
+.sport .c { width: 68px; height: 68px; border-radius: 50%; background: var(--card); display: grid; place-items: center; box-shadow: 0 8px 18px rgba(39, 71, 232, .12); color: var(--blue); transition: background .2s, color .2s; }
+.sport .c svg { width: 34px; height: 34px; }
+.sport[aria-pressed="true"] { color: var(--blue); }
+.sport[aria-pressed="true"] .c { background: var(--blue); color: #fff; box-shadow: var(--shadow-blue); }
 
 /* Urteil */
-.hero { display: grid; gap: 6px; }
-.hero-meta { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
-.hero-meta svg { width: 26px; height: 26px; color: var(--pink); }
-.temp { font: 600 44px/1 var(--display); color: var(--cyan); font-variant-numeric: tabular-nums; }
-.verdict {
-  font: 700 clamp(40px, 12vw, 56px)/.9 var(--display);
-  letter-spacing: -.01em; text-transform: uppercase; margin: 6px 0 0;
-}
-.verdict.go { color: var(--fg); }
-.verdict.stop { color: var(--pink); font-size: clamp(34px, 10vw, 48px); }
-.sub { color: var(--muted); margin: 0; }
-.status { font-size: 13px; color: var(--muted); }
-.status.warn { color: var(--pink); }
-
-/* Dauer */
-.duration { display: flex; align-items: center; gap: 10px; }
-.duration .label { color: var(--muted); font-size: 14px; flex: 1; }
-.step { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: transparent; font-size: 20px; line-height: 1; }
-.dur-val { min-width: 76px; text-align: center; font: 600 22px/1 var(--display); font-variant-numeric: tabular-nums; }
-
-/* Outfit */
-h2 { font: 600 13px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
-.outfit { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.outfit li {
-  display: flex; align-items: center; gap: 10px; min-width: 0;
-  padding: 12px; border-radius: 14px; background: var(--surface);
-  font-weight: 500; font-size: 15px; line-height: 1.25;
-}
-.outfit li svg { width: 22px; height: 22px; flex: none; color: var(--fg); }
-.outfit li.rain svg { color: var(--cyan); }
-.outfit.dim li { opacity: .55; }
+.verdict { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.verdict-main { min-width: 0; }
+.tag { display: inline-block; background: var(--yellow); color: var(--ink); font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 5px; }
+.vtext { font-size: 40px; font-weight: 800; letter-spacing: .02em; line-height: 1.1; margin-top: 6px; }
+.vsub { font-size: 12px; color: var(--muted); }
+.verdict.stop { background: var(--red); color: #fff; box-shadow: 0 14px 30px rgba(255, 59, 92, .32); }
+.verdict.stop .tag { background: #fff; color: var(--red); }
+.verdict.stop .vtext { font-size: clamp(26px, 8.5vw, 34px); }
+.verdict.stop .vsub { color: #ffe1e7; }
+.verdict.stop .step { display: none; }
+.verdict.empty .vtext { font-size: 28px; }
+.step { display: grid; justify-items: center; gap: 6px; flex: none; }
+.step .v { background: var(--blue); color: #fff; border-radius: 12px; padding: 8px 12px; font-weight: 600; font-size: 15px; line-height: 1.2; text-align: center; min-width: 58px; font-variant-numeric: tabular-nums; }
+.step .v small { display: block; font-size: 11px; font-weight: 500; }
+.step .r { display: flex; gap: 8px; }
+.step .r button { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--card); display: grid; place-items: center; font-weight: 600; color: var(--blue); font-size: 17px; line-height: 1; }
 
 /* Hinweise */
-.hints { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.hints li {
-  display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px;
-  border: 1px solid var(--cyan); border-radius: 12px; color: var(--cyan); font-size: 15px;
-}
-.hints li.stop { border-color: var(--pink); color: var(--pink); }
-.hints li svg { width: 20px; height: 20px; flex: none; margin-top: 1px; }
+.hints { display: grid; gap: 10px; }
+.hint { display: flex; align-items: center; gap: 12px; padding: 12px 16px; font-size: 13px; font-weight: 500; }
+.hint .ic { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--yellow-soft); color: var(--ink); }
+.hint.stop .ic { background: var(--red-soft); color: var(--red); }
+.hint .ic svg { width: 18px; height: 18px; }
 
-/* Details */
-.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border-radius: 14px; overflow: hidden; }
-.fact { background: var(--bg); padding: 12px; }
-.fact dt { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
-.fact dd { margin: 2px 0 0; font: 600 20px/1.1 var(--display); font-variant-numeric: tabular-nums; }
-details { border-top: 1px solid var(--line); padding-top: 14px; }
-summary { color: var(--muted); font-size: 14px; cursor: pointer; }
-.fine { color: var(--muted); font-size: 13px; display: grid; gap: 8px; margin-top: 10px; }
+/* Stundenleiste */
+.hours { display: flex; overflow-x: auto; scrollbar-width: none; }
+.hours::-webkit-scrollbar { display: none; }
+.h { flex: 1 0 25%; display: grid; justify-items: center; gap: 6px; padding: 14px 4px 16px; font-size: 12px; }
+.h b { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.h .lbl { color: var(--muted); font-size: 11px; }
+.h svg { width: 44px; height: 34px; }
+.h .t { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.h.on { background: var(--blue); color: #fff; border-radius: 16px; }
+.h.on .lbl { color: var(--blue-pale); }
+
+/* Outfit */
+h2 { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin: 4px 4px -6px; }
+.outfit { list-style: none; margin: 0; padding: 6px 0; }
+.o { display: flex; align-items: center; gap: 14px; padding: 10px 16px; font-size: 14px; font-weight: 500; line-height: 1.3; border-bottom: 1px solid var(--line); }
+.o:last-child { border-bottom: 0; }
+.o .ic { width: 38px; height: 38px; border-radius: 50%; background: var(--blue-soft); color: var(--blue); display: grid; place-items: center; flex: none; }
+.o .ic svg { width: 20px; height: 20px; }
+.o.rain .ic { background: var(--yellow-soft); color: var(--ink); }
+.o .sub { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+.outfit.dim { opacity: .5; }
+
+/* Werte */
+.facts { display: flex; justify-content: space-between; padding: 0 2px; }
+.f { display: grid; justify-items: center; gap: 6px; font-size: 10px; font-weight: 600; letter-spacing: .08em; color: var(--muted); text-align: center; }
+.f .c { width: 56px; height: 56px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; }
+.f .c.light { background: var(--card); color: var(--blue); box-shadow: 0 6px 14px rgba(39, 71, 232, .12); }
+.f .c svg { width: 26px; height: 26px; }
+.f b { font-size: 14px; color: var(--ink); letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.status { text-align: center; font-size: 12px; color: var(--muted); }
+.status.warn { color: var(--red); }
+
+details { padding: 14px 18px; }
+summary { color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; }
+.fine { color: var(--muted); font-size: 12.5px; display: grid; gap: 8px; margin-top: 10px; }
 .fine p { margin: 0; }
-.fine a { color: var(--cyan); }
+.fine a { color: var(--blue); }
 
 /* Einstellungen */
-.sheet[hidden] { display: none !important; }
-.sheet { display: grid; gap: 22px; }
 .sheet-head { display: flex; align-items: center; justify-content: space-between; }
-.sheet-head h1 { font: 700 30px/1 var(--display); margin: 0; letter-spacing: .02em; }
-.field { display: grid; gap: 8px; }
-.field > label, .field > .flabel { font-size: 14px; color: var(--muted); }
-.text {
-  width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--line);
-  background: var(--surface);
-}
-.results { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-.results button {
-  width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px;
-  border: 1px solid var(--line); background: transparent;
-}
+.sheet-head h1 { font-size: 24px; font-weight: 700; margin: 0; }
+.field { padding: 16px; display: grid; gap: 10px; }
+.flabel { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.text { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--bg); }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; }
+.seg button { border: 1.5px solid var(--line); background: var(--card); border-radius: 12px; padding: 10px 6px; font-weight: 600; font-size: 13px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+.results { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.results button { width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--card); font-size: 14px; }
 .limits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.limits label { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
-.primary {
-  border: 0; border-radius: 14px; padding: 14px; background: var(--cyan); color: #0d2b2c;
-  font-weight: 600; font-size: 16px;
-}
-.err { color: var(--pink); font-size: 14px; margin: 0; }
+.limits label { font-size: 12px; color: var(--muted); display: grid; gap: 4px; }
+.primary { border: 0; border-radius: 16px; padding: 15px; background: var(--blue); color: #fff; font-weight: 600; font-size: 16px; box-shadow: var(--shadow-blue); }
+.err { color: var(--red); font-size: 13px; margin: 0; }
 
-@media (max-width: 360px) { .outfit, .facts, .limits { grid-template-columns: minmax(0, 1fr); } }
-@media (prefers-reduced-motion: no-preference) {
-  .verdict { animation: rise .45s ease-out both; }
-  @keyframes rise { from { transform: translateY(8px); opacity: .4; } to { transform: none; opacity: 1; } }
+@media (max-width: 360px) {
+  .sport .c { width: 58px; height: 58px; }
+  .f .c { width: 48px; height: 48px; }
+  .big { font-size: 60px; }
+  .limits { grid-template-columns: minmax(0, 1fr); }
 }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
 <div class="app">
 
-  <main id="main">
-    <div class="app" style="padding:0;gap:20px">
-      <header class="top">
-        <span class="brand">RAUS</span>
-        <div class="top-actions">
-          <button class="iconbtn" id="refresh" aria-label="Wetter neu laden"><svg data-i="refresh"></svg></button>
-          <button class="iconbtn" id="openSettings" aria-label="Einstellungen"><svg data-i="sliders"></svg></button>
+  <main class="view" id="main">
+    <header class="top">
+      <span class="logo">RAUS</span>
+      <span class="place"><svg width="14" height="18" viewBox="0 0 14 18" aria-hidden="true"><path d="M7 0a7 7 0 0 1 7 7c0 5-7 11-7 11S0 12 0 7a7 7 0 0 1 7-7Z" fill="var(--blue)"/><circle cx="7" cy="7" r="2.6" fill="#fff"/></svg><span id="placeName">Frauenfeld</span></span>
+      <button class="rbtn" id="refresh" aria-label="Wetter neu laden"><svg data-i="refresh"></svg></button>
+      <button class="rbtn" id="openSettings" aria-label="Einstellungen"><svg data-i="sliders"></svg></button>
+    </header>
+
+    <section class="hero" aria-live="polite">
+      <span class="pill" id="datePill">Heute</span>
+      <div class="hero-row">
+        <div class="hero-icon" id="heroIcon"></div>
+        <div class="hero-temp">
+          <div class="big" id="temp">–°</div>
+          <div class="hero-sub" id="heroSub">Lade Wetter …</div>
         </div>
-      </header>
-
-      <div class="seg" role="group" aria-label="Sportart" id="sportSeg">
-        <button data-sport="bike">Rennvelo</button>
-        <button data-sport="run">Joggen</button>
-        <button data-sport="swim">Schwimmen</button>
       </div>
+    </section>
 
-      <section class="hero" aria-live="polite">
-        <div class="hero-meta">
-          <svg id="wxIcon" data-i="cloud"></svg>
-          <span class="temp" id="temp">–°</span>
-          <span id="wxLine"></span>
-        </div>
-        <p class="verdict go" id="verdict">Raus</p>
-        <p class="sub" id="sub">Lade Wetter …</p>
-        <span class="status" id="status"></span>
-      </section>
-
-      <div class="duration">
-        <span class="label">Dauer ab jetzt</span>
-        <button class="step" id="durMinus" aria-label="15 Minuten weniger">−</button>
-        <span class="dur-val" id="durVal">60 Min.</span>
-        <button class="step" id="durPlus" aria-label="15 Minuten mehr">+</button>
-      </div>
-
-      <section id="hintsWrap" hidden>
-        <h2>Hinweise</h2>
-        <ul class="hints" id="hints"></ul>
-      </section>
-
-      <section>
-        <h2 id="outfitTitle">Anziehen &amp; mitnehmen</h2>
-        <ul class="outfit" id="outfit"></ul>
-      </section>
-
-      <section id="factsWrap">
-        <h2>Im Trainingsfenster</h2>
-        <dl class="facts" id="facts"></dl>
-      </section>
-
-      <details>
-        <summary>So rechnet RAUS</summary>
-        <div class="fine" id="fine"></div>
-      </details>
+    <div class="sports" role="group" aria-label="Sportart" id="sportSeg">
+      <button class="sport" data-sport="bike"><span class="c"><svg data-i="bike"></svg></span>VELO</button>
+      <button class="sport" data-sport="run"><span class="c"><svg data-i="run"></svg></span>JOGGEN</button>
+      <button class="sport" data-sport="swim"><span class="c"><svg data-i="swim"></svg></span>SCHWIMMEN</button>
     </div>
+
+    <section class="card verdict" id="verdictCard" aria-live="polite">
+      <div class="verdict-main">
+        <span class="tag" id="tag">Jetzt</span>
+        <div class="vtext" id="verdict">RAUS</div>
+        <div class="vsub" id="vsub">Lade Wetter …</div>
+      </div>
+      <div class="step">
+        <span class="v"><span id="durVal">60</span><small>Min.</small></span>
+        <span class="r">
+          <button id="durMinus" aria-label="15 Minuten weniger">−</button>
+          <button id="durPlus" aria-label="15 Minuten mehr">+</button>
+        </span>
+      </div>
+    </section>
+
+    <div class="hints" id="hints"></div>
+
+    <section class="card hours" id="hours" aria-label="Stunden im Trainingsfenster"></section>
+
+    <h2 id="outfitTitle">Anziehen &amp; mitnehmen</h2>
+    <ul class="card outfit" id="outfit"></ul>
+
+    <section class="facts" id="facts"></section>
+    <p class="status" id="status"></p>
+
+    <details class="card">
+      <summary>So rechnet RAUS</summary>
+      <div class="fine" id="fine"></div>
+    </details>
   </main>
 
-  <section class="sheet" id="settings" hidden aria-label="Einstellungen">
+  <section class="view" id="settings" hidden aria-label="Einstellungen">
     <div class="sheet-head">
       <h1>Einstellungen</h1>
-      <button class="iconbtn" id="closeSettings" aria-label="Schliessen"><svg data-i="close"></svg></button>
+      <button class="rbtn" id="closeSettings" aria-label="Schliessen"><svg data-i="close"></svg></button>
     </div>
 
-    <div class="field">
-      <label for="placeInput">Startort</label>
+    <div class="card field">
+      <label class="flabel" for="placeInput">Startort</label>
       <input class="text" id="placeInput" type="search" autocomplete="off" placeholder="Ort oder Postleitzahl">
       <ul class="results" id="placeResults"></ul>
       <p class="err" id="placeErr" hidden></p>
     </div>
 
-    <div class="field" id="kindField">
+    <div class="card field">
       <span class="flabel">Schwimmen</span>
       <div class="seg" role="group" aria-label="Wo schwimmst du?" id="kindSeg">
         <button data-kind="indoor">Hallenbad</button>
@@ -238,7 +251,7 @@ summary { color: var(--muted); font-size: 14px; cursor: pointer; }
       </div>
     </div>
 
-    <div class="field" id="intensityField">
+    <div class="card field">
       <span class="flabel">Joggen: Intensität</span>
       <div class="seg" role="group" aria-label="Intensität" id="intSeg">
         <button data-int="easy">Locker</button>
@@ -246,7 +259,7 @@ summary { color: var(--muted); font-size: 14px; cursor: pointer; }
       </div>
     </div>
 
-    <div class="field">
+    <div class="card field">
       <span class="flabel">Kälteempfinden</span>
       <div class="seg" role="group" aria-label="Kälteempfinden" id="sensSeg">
         <button data-sens="-3">Friere schnell</button>
@@ -255,7 +268,7 @@ summary { color: var(--muted); font-size: 14px; cursor: pointer; }
       </div>
     </div>
 
-    <div class="field">
+    <div class="card field">
       <span class="flabel">Persönliche Warnschwellen</span>
       <div class="limits">
         <label for="limRain">Regen: drinnen ab (mm/h)<input class="text" id="limRain" inputmode="decimal"></label>
@@ -289,11 +302,14 @@ const DEFAULT_SETTINGS = {
   duration: 60, sensitivity: 0, thresholds: { ...DEFAULTS }
 };
 
-// ---------- Icons ----------
+// ---------- Linien-Icons ----------
 const I = {
   refresh: "M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7",
-  sliders: "M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4",
+  sliders: "M4 7h10M18 7h2M4 17h4M12 17h8M16 5v4M10 15v4",
   close: "M6 6l12 12M18 6L6 18",
+  bike: "M5.5 20a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM18.5 20a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM5.5 16.5 10 9h6l2.5 7.5M10 9 8.5 6H7M12 16.5 16 9",
+  run: "M14 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM6 21l4-6 3 2v4M8 11l3-4 4 2 2 3h3M11 7l-1 5",
+  swim: "M2 18c2 0 2 1.5 5 1.5s3-1.5 5-1.5 3 1.5 5 1.5 3-1.5 5-1.5M6 14l5-5 4 3M17 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z",
   shirt: "M8 3 3 6l2 4 2-1v12h10V9l2 1 2-4-5-3a4 4 0 0 1-8 0Z",
   pants: "M7 3h10l1 18h-4l-2-11-2 11H6Z",
   glove: "M8 21v-6l-3-3 1.2-1.2L8 12V5.5a1.2 1.2 0 0 1 2.4 0V11V4.5a1.2 1.2 0 0 1 2.4 0V11V5.5a1.2 1.2 0 0 1 2.4 0V12V8.5a1.2 1.2 0 0 1 2.4 0V15c0 3.5-2 6-5 6Z",
@@ -305,17 +321,13 @@ const I = {
   storm: "M7 14a4 4 0 0 1-.3-8A5.5 5.5 0 0 1 17 6.5 3.8 3.8 0 0 1 17 14M12 13l-2 4h4l-2 4",
   light: "M8 2h8v5l-2 3v12h-4V10L8 7ZM12 14v2",
   snow: "M12 2v20M4 7l16 10M20 7 4 17M9 3l3 2 3-2M9 21l3-2 3 2",
-  swim: "M2 19c2 0 2 1.5 5 1.5s3-1.5 5-1.5 3 1.5 5 1.5 3-1.5 5-1.5M7 14l5-5 3 3M16 7.5a2 2 0 1 0 0-.01",
   goggles: "M2 12a3 3 0 0 0 3 3h2.5l2-2h5l2 2H19a3 3 0 0 0 0-6H5a3 3 0 0 0-3 3Z",
   towel: "M5 3h14v18H5ZM5 8h14M9 13h6",
   buoy: "M12 3a9 9 0 1 0 .01 0ZM12 8a4 4 0 1 0 .01 0ZM5.6 5.6l3.6 3.6M14.8 14.8l3.6 3.6M18.4 5.6l-3.6 3.6M9.2 14.8l-3.6 3.6",
-  scarf: "M6 4h12v4c0 2-3 3-6 3S6 10 6 8ZM10 11v9l3-2v-7",
   waves: "M2 9c2 0 2 2 5 2s3-2 5-2 3 2 5 2 3-2 5-2M2 15c2 0 2 2 5 2s3-2 5-2 3 2 5 2 3-2 5-2",
   moon: "M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10Z",
-  sun: "M12 7.5a4.5 4.5 0 1 0 .01 0ZM12 1.5v2M12 20.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1.5 12h2M20.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4",
-  cloud: "M7 18a5 5 0 0 1-.4-10A6 6 0 0 1 18 9a4.5 4.5 0 0 1-1 9Z",
-  cloudsun: "M8 3v1.5M3.5 8H2M4.5 4.5l1 1M11.5 4.5l-1 1M6 11a3 3 0 1 1 5-3M9 20a4 4 0 0 1-.3-8 5 5 0 0 1 9.4 1.5A3.3 3.3 0 0 1 18 20Z",
-  fog: "M7 12a4 4 0 0 1-.3-8A5.5 5.5 0 0 1 17 4.5M3 15h18M3 19h18M6 11h14",
+  umbrella: "M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9ZM12 12v7a2 2 0 0 1-4 0",
+  thermo: "M14 14V5a2 2 0 0 0-4 0v9a4 4 0 1 0 4 0Z",
   warn: "M12 3 2 21h20ZM12 10v5M12 18h0"
 };
 const SYMBOL = {
@@ -323,26 +335,68 @@ const SYMBOL = {
   "lifepreserver":"buoy","jacket":"jacket","tshirt":"shirt","figure.outdoor.cycle":"pants","figure.run":"pants",
   "hand.raised":"glove","cap":"cap","wind":"wind","cloud.rain":"rain","cloud.rain.fill":"rain",
   "cloud.bolt.rain.fill":"storm","snowflake":"snow","flashlight.on.fill":"light","cloud.snow.fill":"snow",
-  "moon.fill":"moon","water.waves":"waves","sun.max.fill":"sun","cloud.sun.fill":"cloudsun","cloud.moon.fill":"moon",
-  "cloud.fill":"cloud","cloud.fog.fill":"fog"
+  "moon.fill":"moon","water.waves":"waves"
 };
-function svg(name) {
+function svg(name, extra = "") {
   const d = I[SYMBOL[name] || name] || I.warn;
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+  return `<svg ${extra} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
 }
-function setWxIcon(name) {
-  const el = document.getElementById("wxIcon");
-  if (el) el.outerHTML = svg(name).replace("<svg", '<svg id="wxIcon"');
+document.querySelectorAll("svg[data-i]").forEach(el => { el.outerHTML = svg(el.dataset.i); });
+
+// ---------- Farbige Wetter-Icons ----------
+// kind: sun | moon | cloudsun | cloudmoon | cloud | rain | storm | snow | fog
+// onBlue: Wolke weiss auf blauem Grund, sonst blau.
+function wxIcon(kind, onBlue) {
+  const cloud = onBlue ? "#fff" : "var(--blue)";
+  const sunC = "var(--sun)";
+  const sun = `<circle cx="24" cy="18" r="11" fill="${sunC}"/><g stroke="${sunC}" stroke-width="3" stroke-linecap="round"><path d="M24 1v4M8 7l3 3M3 20h4M40 7l-3 3"/></g>`;
+  const moon = `<path d="M30 6a13 13 0 1 0 8 22A11 11 0 0 1 30 6Z" fill="${sunC}"/>`;
+  const smallCloud = `<path d="M18 44a10 10 0 0 1-1-20 13 13 0 0 1 25-2 10 10 0 0 1 9 11 9 9 0 0 1-3 11Z" fill="${cloud}"/>`;
+  const bigCloud = `<path d="M16 38a11 11 0 0 1-1-22 15 15 0 0 1 28-3 11 11 0 0 1 10 12 10 10 0 0 1-4 13Z" fill="${cloud}"/>`;
+  const drops = `<g stroke="${onBlue ? "#cdd6ff" : "var(--blue)"}" stroke-width="3" stroke-linecap="round"><path d="M22 42l-2 4M32 42l-2 4M42 42l-2 4"/></g>`;
+  const flakes = `<g fill="${onBlue ? "#fff" : "var(--blue)"}"><circle cx="21" cy="44" r="2"/><circle cx="31" cy="45" r="2"/><circle cx="41" cy="44" r="2"/></g>`;
+  const bolt = `<path d="M33 30l-6 10h5l-3 8 9-12h-5l3-6Z" fill="${sunC}"/>`;
+  const fog = `<g stroke="${cloud}" stroke-width="4" stroke-linecap="round"><path d="M8 20h44M14 30h40M8 40h36"/></g>`;
+  const parts = {
+    sun: `<g transform="translate(8 6)">${sun}</g>`,
+    moon: `<g transform="translate(4 4)">${moon}</g>`,
+    cloudsun: sun + smallCloud,
+    cloudmoon: `<g transform="translate(-6 -2)">${moon}</g>` + smallCloud,
+    cloud: bigCloud,
+    rain: `<g transform="translate(0 -4)">${bigCloud}</g>` + drops,
+    storm: `<g transform="translate(0 -6)">${bigCloud}</g>` + bolt,
+    snow: `<g transform="translate(0 -4)">${bigCloud}</g>` + flakes,
+    fog
+  };
+  return `<svg viewBox="0 0 64 48" aria-hidden="true">${parts[kind] || parts.cloud}</svg>`;
 }
-document.querySelectorAll("svg[data-i]").forEach(el => {
-  el.outerHTML = el.id ? svg(el.dataset.i).replace("<svg", `<svg id="${el.id}"`) : svg(el.dataset.i);
-});
+function wxKind(code, day) {
+  if (code >= 95) return "storm";
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return "snow";
+  if (code >= 51) return "rain";
+  if (code >= 45) return "fog";
+  if (code === 3) return "cloud";
+  if (code > 0) return day ? "cloudsun" : "cloudmoon";
+  return day ? "sun" : "moon";
+}
+function weatherWord(code) {
+  if (code >= 95) return "Gewitter";
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return "Schnee";
+  if (code >= 80) return "Schauer";
+  if (code >= 61) return "Regen";
+  if (code >= 51) return "Niesel";
+  if (code >= 45) return "Nebel";
+  if (code === 3) return "Bedeckt";
+  if (code > 0) return "Wolkig";
+  return "Klar";
+}
 
 // ---------- Speicher ----------
 const store = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (_) { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} }
 };
+const clone = o => JSON.parse(JSON.stringify(o));
 function limits(s) { return { ...DEFAULTS, ...(s.thresholds || {}) }; }
 function validLimits(t) {
   return Number.isFinite(t.rain) && t.rain >= 0.5 && t.rain <= 30 &&
@@ -352,8 +406,8 @@ function validLimits(t) {
 }
 function loadSettings() {
   const s = store.get(KEY_SETTINGS);
-  if (!s || !SPORT[s.sport] || !s.place || !Number.isFinite(s.place.latitude)) return structuredClone(DEFAULT_SETTINGS);
-  return { ...structuredClone(DEFAULT_SETTINGS), ...s, thresholds: limits(s) };
+  if (!s || !SPORT[s.sport] || !s.place || !Number.isFinite(s.place.latitude)) return clone(DEFAULT_SETTINGS);
+  return { ...clone(DEFAULT_SETTINGS), ...s, thresholds: limits(s) };
 }
 let S = loadSettings();
 function saveSettings() { store.set(KEY_SETTINGS, S); }
@@ -497,55 +551,48 @@ function recommend(s, w) {
   return { items, hints, stop: hints.some(h => h.stop) };
 }
 
+// Kleine Zusatzzeile zur Regel, nur für die Jogging-Oberteile.
+function ruleNote(item, w) {
+  if (S.sport !== "run" || !w) return "";
+  if (item.full === "Langarm-Laufshirt") return "tiefste Temperatur " + Math.round(w.min) + " °C, unter 17 °C";
+  if (item.full === "Kurzarm-Laufshirt") return "über 17 °C";
+  if (item.short === "Hoodie") return "unter 10 °C";
+  return "";
+}
+
 // ---------- Hilfen ----------
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const tagText = short => short.includes(":") ? short.split(":")[0] : short;
 function clock(epoch) {
   return new Intl.DateTimeFormat("de-CH", { timeZone: S.place.timezone, hour: "2-digit", minute: "2-digit" }).format(new Date(epoch * 1000));
 }
-function weatherSymbol(code, day) {
-  if (code >= 95) return "cloud.bolt.rain.fill";
-  if ([71, 73, 75, 77, 85, 86].includes(code)) return "cloud.snow.fill";
-  if (code >= 51) return "cloud.rain.fill";
-  if (code >= 45) return "cloud.fog.fill";
-  if (code === 3) return "cloud.fill";
-  if (code > 0) return day ? "cloud.sun.fill" : "cloud.moon.fill";
-  return day ? "sun.max.fill" : "moon.fill";
+function dateLabel(epoch) {
+  return new Intl.DateTimeFormat("de-CH", { timeZone: S.place.timezone, weekday: "long", day: "numeric", month: "long" }).format(new Date(epoch * 1000));
 }
-function weatherWord(code) {
-  if (code >= 95) return "Gewitter";
-  if ([71, 73, 75, 77, 85, 86].includes(code)) return "Schnee";
-  if (code >= 80) return "Schauer";
-  if (code >= 61) return "Regen";
-  if (code >= 51) return "Niesel";
-  if (code >= 45) return "Nebel";
-  if (code === 3) return "Bedeckt";
-  if (code > 0) return "Wolkig";
-  return "Klar";
-}
-const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-// Beispielprognose nur für die Vorschau in einem Rahmen, wo kein Netz erlaubt ist.
+// Beispielprognose nur für eine Vorschau in einem Rahmen, wo kein Netz erlaubt ist.
 function sampleData() {
   const now = Math.floor(Date.now() / 1000);
   const c0 = now - (now % 900);
   const h0 = now - (now % 3600) - 3600;
   const time = Array.from({ length: 48 }, (_, i) => h0 + i * 3600);
-  const temps = time.map((_, i) => 9 - i * 0.3);
+  const temps = time.map((_, i) => 6 + Math.min(i, 5) * 0.5);
   const day0 = h0 - ((h0 + 3600) % 86400);
   return {
-    current: { time: c0, temperature_2m: 9, apparent_temperature: 6.5, precipitation: 0, weather_code: 3, wind_speed_10m: 14, wind_gusts_10m: 31, is_day: 1 },
+    current: { time: c0, temperature_2m: 6, apparent_temperature: 2, precipitation: 0, weather_code: 3, wind_speed_10m: 12, wind_gusts_10m: 30, is_day: 1 },
     hourly: {
-      time, temperature_2m: temps, apparent_temperature: temps.map(t => t - 2.5),
-      precipitation: time.map((_, i) => i === 3 ? 0.2 : 0), weather_code: time.map((_, i) => i === 3 ? 61 : 3),
-      wind_speed_10m: time.map(() => 15), wind_gusts_10m: time.map(() => 32), is_day: time.map(() => 1),
-      precipitation_probability: time.map((_, i) => i < 2 ? 20 : 45), rain: time.map((_, i) => i === 3 ? 0.2 : 0), showers: time.map(() => 0)
+      time, temperature_2m: temps, apparent_temperature: temps.map(t => t - 4),
+      precipitation: time.map(() => 0), weather_code: time.map((_, i) => i % 3 ? 2 : 3),
+      wind_speed_10m: time.map(() => 14), wind_gusts_10m: time.map(() => 32), is_day: time.map(() => 1),
+      precipitation_probability: time.map(() => 0), rain: time.map(() => 0), showers: time.map(() => 0)
     },
     daily: { sunrise: [day0 + 7 * 3600, day0 + 31 * 3600, day0 + 55 * 3600], sunset: [day0 + 17 * 3600, day0 + 41 * 3600, day0 + 65 * 3600] }
   };
 }
 
 // ---------- Zustand und Ablauf ----------
-let raw = null;        // { data, fetchedAt, placeKey, source }
+let raw = null;
 let loading = false;
 const placeKey = p => p.latitude.toFixed(3) + "," + p.longitude.toFixed(3);
 
@@ -565,9 +612,8 @@ async function refresh(force = false) {
   render();
   try {
     const data = await fetchForecast(S.place);
-    raw = { data, fetchedAt: Date.now(), placeKey: placeKey(S.place), source: "live" };
+    raw = { data, fetchedAt: Date.now(), placeKey: placeKey(S.place), source: "live", error: null };
     store.set(KEY_CACHE, { data, fetchedAt: raw.fetchedAt, placeKey: raw.placeKey });
-    raw.error = null;
   } catch (e) {
     const fallback = cachedRaw();
     if (fallback) raw = { ...fallback, error: e.message };
@@ -590,7 +636,6 @@ function compute() {
     const w = summarize(raw.data, S, now);
     return { w, rec: recommend(S, w), start: now, stale: false };
   } catch (_) {
-    // Ältere Daten: Empfehlung für den Zeitpunkt der letzten Abfrage zeigen.
     try {
       const t = raw.data.current.time;
       const w = summarize(raw.data, S, t);
@@ -599,83 +644,127 @@ function compute() {
   }
 }
 
+// ---------- Darstellung ----------
+function renderHours(start, end) {
+  const h = raw && raw.data && raw.data.hourly;
+  if (!h) { $("hours").hidden = true; return; }
+  const first = start - (start % 3600);
+  const last = Math.max(first + 3 * 3600, end);
+  const cols = [];
+  h.time.forEach((t, i) => {
+    if (t >= first && t <= last && cols.length < 8) {
+      const on = t + 3600 > start && t < end;
+      const code = h.weather_code[i];
+      cols.push(`<div class="h${on ? " on" : ""}"><b>${clock(t)}</b><span class="lbl">${weatherWord(code)}</span>${wxIcon(wxKind(code, h.is_day[i]), on)}<span class="t">${Math.round(h.temperature_2m[i])}°</span></div>`);
+    }
+  });
+  $("hours").hidden = !cols.length;
+  $("hours").innerHTML = cols.join("");
+}
+
 function render() {
-  // Steuerelemente
-  document.querySelectorAll("#sportSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sport === S.sport)));
-  $("durVal").textContent = S.duration + " Min.";
+  document.querySelectorAll("#sportSeg .sport").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.sport === S.sport)));
+  $("durVal").textContent = S.duration;
+  $("placeName").textContent = S.place.name;
 
   const m = compute();
-  const hero = $("verdict"), sub = $("sub"), status = $("status");
+  const card = $("verdictCard"), status = $("status");
   status.className = "status";
 
   if (!m || m.error) {
-    $("temp").textContent = "–°";
-    $("wxLine").textContent = S.place.name;
-    hero.textContent = loading ? "…" : "Kein Wetter";
-    hero.className = "verdict stop";
-    sub.textContent = loading ? "Lade Wetter für " + S.place.name + " …" : (raw && raw.error) || (m && m.error) || "Noch keine Daten.";
+    $("datePill").textContent = dateLabel(Date.now() / 1000);
+    $("heroIcon").innerHTML = wxIcon("cloud", true);
+    $("temp").textContent = "–°"; $("temp").className = "big";
+    $("heroSub").textContent = loading ? "Lade Wetter …" : "Keine Daten";
+    card.className = "card verdict empty";
+    $("tag").textContent = loading ? "Moment" : "Offline";
+    $("verdict").textContent = loading ? "…" : "Kein Wetter";
+    $("vsub").textContent = loading ? "Lade Wetter für " + S.place.name + " …" : ((raw && raw.error) || (m && m.error) || "Noch keine Daten.");
+    $("hints").innerHTML = ""; $("hours").hidden = true; $("facts").innerHTML = "";
+    $("outfit").innerHTML = ""; $("outfitTitle").hidden = true; $("outfit").hidden = true;
     status.textContent = loading ? "" : "Mit Netz neu laden.";
-    $("outfit").innerHTML = ""; $("hintsWrap").hidden = true; $("factsWrap").hidden = true;
     $("fine").innerHTML = fineText(null);
     return;
   }
+  $("outfitTitle").hidden = false; $("outfit").hidden = false;
 
-  const { w, rec, start, stale } = m;
+  const { w, rec, start } = m;
   const end = start + S.duration * 60;
+  $("datePill").textContent = dateLabel(start);
 
+  // Wetterkarte
   if (w) {
-    setWxIcon(weatherSymbol(w.current.weather_code, w.current.is_day));
-    $("temp").textContent = Math.round(w.current.temperature_2m) + "°";
-    $("wxLine").textContent = weatherWord(w.current.weather_code) + " · Wind " + Math.round(w.current.wind_speed_10m) + " km/h · " + S.place.name;
+    $("heroIcon").innerHTML = wxIcon(wxKind(w.current.weather_code, w.current.is_day), true);
+    $("temp").textContent = Math.round(w.current.temperature_2m) + "°"; $("temp").className = "big";
+    $("heroSub").textContent = "Gefühlt " + Math.round(w.current.apparent_temperature) + "° · " + weatherWord(w.current.weather_code);
   } else {
-    setWxIcon("swim");
-    $("temp").textContent = "Hallenbad";
-    $("wxLine").textContent = "";
+    $("heroIcon").innerHTML = `<span style="color:#fff">${svg("swim", 'width="84" height="84"')}</span>`;
+    $("temp").textContent = "Hallenbad"; $("temp").className = "big word";
+    $("heroSub").textContent = "Kein Wetter nötig";
   }
 
+  // Urteil: passt, passt mit Hinweis, verschieben
+  const span = SPORT[S.sport] + " " + clock(start) + "–" + clock(end);
   if (rec.stop) {
-    hero.textContent = "Verschieben";
-    hero.className = "verdict stop";
-    sub.textContent = "Outdoor-Training ist nicht empfohlen. " + rec.hints[0].full;
+    const first = rec.hints[0];
+    card.className = "card verdict stop";
+    $("tag").textContent = tagText(first.short);
+    $("verdict").textContent = "VERSCHIEBEN";
+    $("vsub").textContent = first.full;
+  } else if (rec.hints.length) {
+    card.className = "card verdict warn";
+    $("tag").textContent = tagText(rec.hints[0].short);
+    $("verdict").textContent = "RAUS";
+    $("vsub").textContent = span + " · mit Hinweis";
   } else {
-    hero.textContent = "Raus";
-    hero.className = "verdict go";
-    sub.textContent = SPORT[S.sport] + " " + clock(start) + "–" + clock(end) + ". Das passt, so ziehst du dich an:";
+    card.className = "card verdict";
+    $("tag").textContent = "Jetzt";
+    $("verdict").textContent = "RAUS";
+    $("vsub").textContent = span + " · passt";
   }
 
-  // Status
-  if (raw && raw.source === "sample") {
-    status.textContent = "Beispieldaten · in der Vorschau ist kein Wetterdienst erreichbar";
-    status.className = "status warn";
-  } else if (w && (stale || (raw && raw.error))) {
-    status.textContent = "Offline · Stand " + clock(w.current.time) + (stale ? " · Empfehlung für diesen Zeitpunkt" : "");
-    status.className = "status warn";
-  } else if (w) {
-    status.textContent = (loading ? "Aktualisiere … " : "") + "Wetterstand " + clock(w.current.time);
-  } else {
-    status.textContent = S.duration + " Minuten";
-  }
+  // Hinweise (der erste steckt bei VERSCHIEBEN schon in der Karte)
+  const shown = rec.stop ? rec.hints.slice(1) : rec.hints;
+  $("hints").innerHTML = shown.map(h =>
+    `<div class="card hint${h.stop ? " stop" : ""}"><span class="ic">${svg(h.symbol)}</span><span>${esc(h.full)}</span></div>`).join("");
+
+  // Stunden
+  if (w) renderHours(start, end); else $("hours").hidden = true;
 
   // Outfit
   $("outfitTitle").textContent = rec.stop ? "Falls du trotzdem gehst" : "Anziehen & mitnehmen";
-  $("outfit").className = "outfit" + (rec.stop ? " dim" : "");
-  $("outfit").innerHTML = rec.items.map(i =>
-    `<li class="${i.symbol.startsWith("cloud.rain") ? "rain" : ""}">${svg(i.symbol)}<span>${esc(i.full)}</span></li>`).join("");
+  $("outfit").className = "card outfit" + (rec.stop ? " dim" : "");
+  $("outfit").innerHTML = rec.items.map(i => {
+    const note = ruleNote(i, w);
+    return `<li class="o${i.symbol.startsWith("cloud.rain") ? " rain" : ""}"><span class="ic">${svg(i.symbol)}</span><span>${esc(i.full)}${note ? `<span class="sub">${esc(note)}</span>` : ""}</span></li>`;
+  }).join("");
 
-  // Hinweise
-  $("hintsWrap").hidden = !rec.hints.length;
-  $("hints").innerHTML = rec.hints.map(h => `<li class="${h.stop ? "stop" : ""}">${svg(h.symbol)}<span>${esc(h.full)}</span></li>`).join("");
-
-  // Fakten
-  $("factsWrap").hidden = !w;
+  // Werte
   if (w) {
-    $("facts").innerHTML = [
-      ["Temperatur", Math.round(w.min) + "–" + Math.round(w.max) + " °C"],
-      ["Gefühlt min.", Math.round(w.feel) + " °C"],
-      ["Wind / Böen", Math.round(w.wind) + " / " + Math.round(w.gust) + " km/h"],
-      ["Regen", w.rainRate.toFixed(1) + " mm/h · " + Math.round(w.rainChance) + " %"]
-    ].map(([k, v]) => `<div class="fact"><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+    const f = (icon, label, value, light) =>
+      `<div class="f"><span class="c${light ? " light" : ""}">${svg(icon)}</span>${label}<b>${value}</b></div>`;
+    $("facts").innerHTML =
+      f("umbrella", "REGEN", Math.round(w.rainChance) + " %") +
+      f("wind", "WIND", Math.round(w.wind) + " km/h") +
+      f("waves", "BÖEN", Math.round(w.gust) + " km/h") +
+      f("thermo", "GEFÜHLT", Math.round(w.feel) + " °C", true);
+  } else {
+    $("facts").innerHTML = "";
   }
+
+  // Stand
+  if (raw && raw.source === "sample") {
+    status.textContent = "Beispieldaten · in der Vorschau ist kein Wetterdienst erreichbar";
+    status.className = "status warn";
+  } else if (w && (m.stale || (raw && raw.error))) {
+    status.textContent = "Offline · Stand " + clock(w.current.time) + (m.stale ? " · Empfehlung für diesen Zeitpunkt" : "");
+    status.className = "status warn";
+  } else if (w) {
+    status.textContent = (loading ? "Aktualisiere … " : "") + "Wetterstand " + clock(w.current.time) + " · " + Math.round(w.min) + "–" + Math.round(w.max) + " °C im Fenster";
+  } else {
+    status.textContent = "";
+  }
+
   $("fine").innerHTML = fineText(w);
 }
 
@@ -700,9 +789,7 @@ $("sportSeg").addEventListener("click", e => {
   if (!b) return;
   S.sport = b.dataset.sport; saveSettings(); refresh();
 });
-function setDuration(n) {
-  S.duration = Math.min(720, Math.max(15, n)); saveSettings(); render();
-}
+function setDuration(n) { S.duration = Math.min(720, Math.max(15, n)); saveSettings(); render(); }
 $("durMinus").addEventListener("click", () => setDuration(S.duration - 15));
 $("durPlus").addEventListener("click", () => setDuration(S.duration + 15));
 $("refresh").addEventListener("click", () => refresh(true));
@@ -716,7 +803,7 @@ function segSync() {
   document.querySelectorAll("#sensSeg button").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.sens) === draft.sensitivity)));
 }
 function openSettings() {
-  draft = structuredClone(S);
+  draft = clone(S);
   $("placeInput").value = draft.place.name;
   $("placeResults").innerHTML = ""; $("placeErr").hidden = true; $("limErr").hidden = true;
   const t = limits(draft);
