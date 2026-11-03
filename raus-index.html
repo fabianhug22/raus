@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="RAUS">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,10 +33,14 @@
   --red-soft: #ffe1e7;
   --sun: #ffc21a;
   --shadow: 0 10px 24px rgba(39, 71, 232, .08);
-  --shadow-blue: 0 14px 30px rgba(39, 71, 232, .32);
+  --shadow-blue: 0 14px 30px color-mix(in srgb, var(--blue) 32%, transparent);
   --font: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
   color-scheme: light;
 }
+@property --blue { syntax: "<color>"; inherits: true; initial-value: #2747e8; }
+@property --blue-soft { syntax: "<color>"; inherits: true; initial-value: #e9edff; }
+@property --sky1 { syntax: "<color>"; inherits: true; initial-value: #4a66ff; }
+:root { --sky1: #4a66ff; transition: --blue .6s ease, --blue-soft .6s ease, --sky1 .6s ease; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { min-height: 100%; }
@@ -66,19 +70,23 @@ svg { display: block; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Wetterkarte */
-.hero { background: var(--blue); color: #fff; border-radius: 22px; padding: 18px 20px 20px; box-shadow: var(--shadow-blue); }
+.hero {
+  background: linear-gradient(155deg, var(--sky1), var(--blue)); color: #fff;
+  border-radius: 22px; padding: 18px 20px 20px;
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--blue) 35%, transparent);
+}
 .pill { display: inline-block; background: #fff; color: var(--ink); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 6px; }
 .hero-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
-.hero-icon svg { width: 112px; height: 84px; }
+.hero-icon svg { width: 120px; height: 90px; }
 .hero-temp { text-align: right; min-width: 0; }
-.big { font-size: 72px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.big { font-size: 68px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
 .big.word { font-size: 32px; font-weight: 700; }
 .hero-sub { font-size: 13px; opacity: .88; margin-top: 6px; }
 
 /* Sportarten */
 .sports { display: flex; justify-content: space-between; padding: 0 4px; }
 .sport { border: 0; background: none; padding: 0; display: grid; justify-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: .08em; color: var(--muted); }
-.sport .c { width: 68px; height: 68px; border-radius: 50%; background: var(--card); display: grid; place-items: center; box-shadow: 0 8px 18px rgba(39, 71, 232, .12); color: var(--blue); transition: background .2s, color .2s; }
+.sport .c { width: 60px; height: 60px; border-radius: 50%; background: var(--card); display: grid; place-items: center; box-shadow: 0 8px 18px rgba(39, 71, 232, .12); color: var(--blue); transition: background .2s, color .2s; }
 .sport .c svg { width: 34px; height: 34px; }
 .sport[aria-pressed="true"] { color: var(--blue); }
 .sport[aria-pressed="true"] .c { background: var(--blue); color: #fff; box-shadow: var(--shadow-blue); }
@@ -99,44 +107,42 @@ svg { display: block; }
 .step .v { background: var(--blue); color: #fff; border-radius: 12px; padding: 8px 12px; font-weight: 600; font-size: 15px; line-height: 1.2; text-align: center; min-width: 58px; font-variant-numeric: tabular-nums; }
 .step .v small { display: block; font-size: 11px; font-weight: 500; }
 .step .r { display: flex; gap: 8px; }
-.step .r button { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--card); display: grid; place-items: center; font-weight: 600; color: var(--blue); font-size: 17px; line-height: 1; }
+.step .r button { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--card); display: grid; place-items: center; font-weight: 600; color: var(--blue); font-size: 17px; line-height: 1; }
 
-/* Hinweise */
-.hints { display: grid; gap: 10px; }
-.hint { display: flex; align-items: center; gap: 12px; padding: 12px 16px; font-size: 13px; font-weight: 500; }
-.hint .ic { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--yellow-soft); color: var(--ink); }
-.hint.stop .ic { background: var(--red-soft); color: var(--red); }
-.hint .ic svg { width: 18px; height: 18px; }
+/* Notizen in der Urteilskarte */
+.vnotes { display: grid; gap: 4px; margin-top: 8px; }
+.vnotes:empty { display: none; }
+.note { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--ink); }
+.note svg { width: 14px; height: 14px; flex: none; color: var(--blue); }
+.verdict.stop .note { color: #fff; }
+.verdict.stop .note svg { color: #fff; }
 
 /* Stundenleiste */
 .hours { display: flex; overflow-x: auto; scrollbar-width: none; }
 .hours::-webkit-scrollbar { display: none; }
-.h { flex: 1 0 25%; display: grid; justify-items: center; gap: 6px; padding: 14px 4px 16px; font-size: 12px; }
+.h { flex: 1 0 25%; display: grid; justify-items: center; gap: 4px; padding: 12px 4px 14px; font-size: 12px; }
 .h b { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.h .lbl { color: var(--muted); font-size: 11px; }
 .h svg { width: 44px; height: 34px; }
-.h .t { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.h.on { background: var(--blue); color: #fff; border-radius: 16px; }
-.h.on .lbl { color: var(--blue-pale); }
+.h .t { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.h.on { background: var(--blue); color: #fff; }
+.h.on:first-child, .h:not(.on) + .h.on { border-top-left-radius: 16px; border-bottom-left-radius: 16px; }
+.h.on:last-child, .h.on:has(+ .h:not(.on)) { border-top-right-radius: 16px; border-bottom-right-radius: 16px; }
 
-/* Outfit */
-h2 { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin: 4px 4px -6px; }
-.outfit { list-style: none; margin: 0; padding: 6px 0; }
-.o { display: flex; align-items: center; gap: 14px; padding: 10px 16px; font-size: 14px; font-weight: 500; line-height: 1.3; border-bottom: 1px solid var(--line); }
-.o:last-child { border-bottom: 0; }
-.o .ic { width: 38px; height: 38px; border-radius: 50%; background: var(--blue-soft); color: var(--blue); display: grid; place-items: center; flex: none; }
-.o .ic svg { width: 20px; height: 20px; }
+/* Outfit: Kacheln, direkt unter dem Urteil */
+h2 { font-size: 17px; font-weight: 700; color: var(--ink); margin: 6px 2px -4px; }
+.outfit { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.o {
+  background: var(--card); border-radius: 18px; box-shadow: var(--shadow);
+  padding: 12px; display: flex; align-items: center; gap: 12px; min-width: 0;
+}
+.o .ic { width: 44px; height: 44px; flex: none; border-radius: 14px; background: var(--blue-soft); color: var(--blue); display: grid; place-items: center; }
+.o .ic svg { width: 24px; height: 24px; stroke-width: 2.1; }
 .o.rain .ic { background: var(--yellow-soft); color: var(--ink); }
-.o .sub { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+.o .txt { min-width: 0; display: grid; gap: 1px; }
+.o .name { font-size: 14px; font-weight: 600; line-height: 1.25; }
+.o .det { font-size: 11px; color: var(--muted); line-height: 1.3; }
 .outfit.dim { opacity: .5; }
 
-/* Werte */
-.facts { display: flex; justify-content: space-between; padding: 0 2px; }
-.f { display: grid; justify-items: center; gap: 6px; font-size: 10px; font-weight: 600; letter-spacing: .08em; color: var(--muted); text-align: center; }
-.f .c { width: 56px; height: 56px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; }
-.f .c.light { background: var(--card); color: var(--blue); box-shadow: 0 6px 14px rgba(39, 71, 232, .12); }
-.f .c svg { width: 26px; height: 26px; }
-.f b { font-size: 14px; color: var(--ink); letter-spacing: 0; font-variant-numeric: tabular-nums; }
 .status { text-align: center; font-size: 12px; color: var(--muted); }
 .status.warn { color: var(--red); }
 
@@ -168,10 +174,72 @@ summary { color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointe
   .big { font-size: 60px; }
   .limits { grid-template-columns: minmax(0, 1fr); }
 }
+/* ---------- Animationen ---------- */
+.anim * { transform-box: fill-box; }
+.anim .sun { animation: hover 3.4s ease-in-out infinite; }
+.anim .twinkle { transform-origin: center; animation: twinkle 2.2s ease-in-out infinite; }
+.anim .cloud { animation: hover 3.8s ease-in-out infinite; animation-delay: -.6s; }
+.anim .cloud:first-child { animation-duration: 4.4s; animation-delay: -2s; }
+.anim .moonb { animation: hover 4s ease-in-out infinite; }
+.anim .drop { animation: fall 1.1s linear infinite; }
+.anim .drop:nth-child(2) { animation-delay: .35s; }
+.anim .drop:nth-child(3) { animation-delay: .7s; }
+.anim .flake { animation: snow 2.6s linear infinite; }
+.anim .flake:nth-child(2) { animation-delay: .8s; }
+.anim .flake:nth-child(3) { animation-delay: 1.6s; }
+.anim .bolt { animation: flash 2.8s steps(1) infinite, hover 3s ease-in-out infinite; }
+.anim .fogl { animation: hover 3.6s ease-in-out infinite; }
+.anim .fogl:nth-child(2) { animation-delay: -1.3s; animation-direction: reverse; }
+@keyframes hover { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
+@keyframes twinkle { 50% { transform: scale(.6); opacity: .5; } }
+@keyframes drift { 50% { transform: translateX(4px); } }
+@keyframes glow { 50% { transform: scale(1.06); opacity: .85; } }
+@keyframes fall { 0% { transform: translateY(-4px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(6px); opacity: 0; } }
+@keyframes snow { 0% { transform: translateY(-4px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translate(2px, 7px); opacity: 0; } }
+@keyframes flash { 0%, 70%, 78%, 100% { opacity: 1; } 74%, 82% { opacity: .15; } }
+
+/* Sport: gewählter Button hüpft kurz, das Icon bewegt sich leicht */
+.sport[aria-pressed="true"] .c { animation: pop .45s cubic-bezier(.3, 1.6, .5, 1); }
+.sport[aria-pressed="true"] .c svg { animation: bob 1.6s ease-in-out infinite; }
+@keyframes pop { 0% { transform: scale(.85); } 100% { transform: scale(1); } }
+@keyframes bob { 50% { transform: translateY(-2px); } }
+
+/* Inhalte gleiten herein */
+.enter { animation: rise .45s ease-out both; }
+.outfit .o { animation: rise .4s ease-out both; }
+.outfit .o:nth-child(2) { animation-delay: .05s; }
+.outfit .o:nth-child(3) { animation-delay: .1s; }
+.outfit .o:nth-child(4) { animation-delay: .15s; }
+.outfit .o:nth-child(5) { animation-delay: .2s; }
+.outfit .o:nth-child(n+6) { animation-delay: .25s; }
+.hours .h { animation: rise .4s ease-out both; }
+.hours .h:nth-child(2) { animation-delay: .06s; }
+.hours .h:nth-child(3) { animation-delay: .12s; }
+.hours .h:nth-child(n+4) { animation-delay: .18s; }
+@keyframes rise { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+.verdict { transition: background-color .35s, box-shadow .35s, color .35s; }
+.step .r button:active, .rbtn:active, .sport:active .c { transform: scale(.92); }
+.step .r button, .rbtn, .sport .c { transition: transform .12s, background .2s, color .2s; }
+
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gSun" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe6a0"/><stop offset="1" stop-color="#ffb540"/></linearGradient>
+    <radialGradient id="gSunCore" cx=".38" cy=".35" r=".7"><stop offset="0" stop-color="#ffd970"/><stop offset="1" stop-color="#f6a12a"/></radialGradient>
+    <linearGradient id="gCloud" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d8e2fb"/></linearGradient>
+    <linearGradient id="gCloudBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".9"/><stop offset="1" stop-color="#c3d0f6" stop-opacity=".75"/></linearGradient>
+    <linearGradient id="gCloudW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dfe6ff"/><stop offset="1" stop-color="#9fb2f0"/></linearGradient>
+    <linearGradient id="gCloudWBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef2ff"/><stop offset="1" stop-color="#c6d2f6"/></linearGradient>
+    <linearGradient id="gDrop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfeaff"/><stop offset="1" stop-color="#6fb4ff"/></linearGradient>
+    <linearGradient id="gBolt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe066"/><stop offset="1" stop-color="#ff9a1a"/></linearGradient>
+    <linearGradient id="gMoon" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d6c2ff"/><stop offset="1" stop-color="#7a4dff"/></linearGradient>
+    <filter id="fSoft" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1b2a8a" flood-opacity=".22"/></filter>
+    <filter id="fGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+</svg>
 <div class="app">
 
   <main class="view" id="main">
@@ -182,7 +250,7 @@ summary { color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointe
       <button class="rbtn" id="openSettings" aria-label="Einstellungen"><svg data-i="sliders"></svg></button>
     </header>
 
-    <section class="hero" aria-live="polite">
+    <section class="hero" id="hero" aria-live="polite">
       <span class="pill" id="datePill">Heute</span>
       <div class="hero-row">
         <div class="hero-icon" id="heroIcon"></div>
@@ -194,9 +262,9 @@ summary { color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointe
     </section>
 
     <div class="sports" role="group" aria-label="Sportart" id="sportSeg">
-      <button class="sport" data-sport="bike"><span class="c"><svg data-i="bike"></svg></span>VELO</button>
-      <button class="sport" data-sport="run"><span class="c"><svg data-i="run"></svg></span>JOGGEN</button>
-      <button class="sport" data-sport="swim"><span class="c"><svg data-i="swim"></svg></span>SCHWIMMEN</button>
+      <button class="sport" data-sport="bike"><span class="c"><svg data-s="bike"></svg></span>VELO</button>
+      <button class="sport" data-sport="run"><span class="c"><svg data-s="run"></svg></span>JOGGEN</button>
+      <button class="sport" data-sport="swim"><span class="c"><svg data-s="swim"></svg></span>SCHWIMMEN</button>
     </div>
 
     <section class="card verdict" id="verdictCard" aria-live="polite">
@@ -204,6 +272,7 @@ summary { color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointe
         <span class="tag" id="tag">Jetzt</span>
         <div class="vtext" id="verdict">RAUS</div>
         <div class="vsub" id="vsub">Lade Wetter …</div>
+        <div class="vnotes" id="vnotes"></div>
       </div>
       <div class="step">
         <span class="v"><span id="durVal">60</span><small>Min.</small></span>
@@ -214,14 +283,11 @@ summary { color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointe
       </div>
     </section>
 
-    <div class="hints" id="hints"></div>
+    <h2 id="outfitTitle">Anziehen &amp; mitnehmen</h2>
+    <ul class="outfit" id="outfit"></ul>
 
     <section class="card hours" id="hours" aria-label="Stunden im Trainingsfenster"></section>
 
-    <h2 id="outfitTitle">Anziehen &amp; mitnehmen</h2>
-    <ul class="card outfit" id="outfit"></ul>
-
-    <section class="facts" id="facts"></section>
     <p class="status" id="status"></p>
 
     <details class="card">
@@ -343,32 +409,71 @@ function svg(name, extra = "") {
 }
 document.querySelectorAll("svg[data-i]").forEach(el => { el.outerHTML = svg(el.dataset.i); });
 
-// ---------- Farbige Wetter-Icons ----------
+// Sport-Piktogramme: kräftige Linien, runde Enden, voller Kopf.
+const SPORT_ICON = {
+  swim: `<circle cx="17.6" cy="8.4" r="3"/><path d="M3.2 10.8 9.2 6.2l5.6 5.6" fill="none" stroke-width="3.3"/><path d="M1.8 16.2c1.8-1.4 3.6-1.4 5.4 0s3.6 1.4 5.4 0 3.6-1.4 5.4 0 3.6 1.4 4.8 0M1.8 20.8c1.8-1.4 3.6-1.4 5.4 0s3.6 1.4 5.4 0 3.6-1.4 5.4 0 3.6 1.4 4.8 0" fill="none" stroke-width="2.6"/>`,
+  bike: `<circle cx="17.2" cy="2.8" r="2.7"/><path d="M8.8 11.2 13.6 8.2l2.8 3.4h3M9 11.6l4.4 3.2-.8 4.4" fill="none" stroke-width="3.3"/><circle cx="5.2" cy="18.6" r="3.5" fill="none" stroke-width="2.6"/><circle cx="18.8" cy="18.6" r="3.5" fill="none" stroke-width="2.6"/>`,
+  run: `<circle cx="16.2" cy="3.2" r="2.8"/><path d="M14 8.2 11 14.6M13.6 8.6 9 9.6 7 12.6M14.2 8.8l2.8 3.4 3.2-1.6M11 14.6l4.4 2.6-.4 4.6M11 14.6 8.4 18.6 4.8 21" fill="none" stroke-width="3.3"/>`
+};
+function sportIcon(k, extra = "") {
+  return `<svg ${extra} viewBox="0 0 24 24" overflow="visible" fill="currentColor" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SPORT_ICON[k]}</svg>`;
+}
+document.querySelectorAll("svg[data-s]").forEach(el => { el.outerHTML = sportIcon(el.dataset.s); });
+
+// ---------- Wetter-Icons im Glas-Look ----------
 // kind: sun | moon | cloudsun | cloudmoon | cloud | rain | storm | snow | fog
-// onBlue: Wolke weiss auf blauem Grund, sonst blau.
+// onBlue: auf farbigem Grund helle Wolken, auf Weiss bläuliche.
+function starPath(cx, cy, ro, ri, n = 8) {
+  let d = "";
+  for (let i = 0; i < n * 2; i++) {
+    const r = i % 2 ? ri : ro, a = Math.PI * i / n - Math.PI / 2;
+    d += (i ? "L" : "M") + (cx + r * Math.cos(a)).toFixed(2) + " " + (cy + r * Math.sin(a)).toFixed(2);
+  }
+  return d + "Z";
+}
+const CLOUD_BIG = "M18 42h30a10 10 0 0 0 1-20a14 14 0 0 0-27-4a11 11 0 0 0-4 24Z";
+const CLOUD_SMALL = "M17 40h28a9 9 0 0 0 1-18a13 13 0 0 0-25-4a10 10 0 0 0-4 22Z";
 function wxIcon(kind, onBlue) {
-  const cloud = onBlue ? "#fff" : "var(--blue)";
-  const sunC = "var(--sun)";
-  const sun = `<circle cx="24" cy="18" r="11" fill="${sunC}"/><g stroke="${sunC}" stroke-width="3" stroke-linecap="round"><path d="M24 1v4M8 7l3 3M3 20h4M40 7l-3 3"/></g>`;
-  const moon = `<path d="M30 6a13 13 0 1 0 8 22A11 11 0 0 1 30 6Z" fill="${sunC}"/>`;
-  const smallCloud = `<path d="M18 44a10 10 0 0 1-1-20 13 13 0 0 1 25-2 10 10 0 0 1 9 11 9 9 0 0 1-3 11Z" fill="${cloud}"/>`;
-  const bigCloud = `<path d="M16 38a11 11 0 0 1-1-22 15 15 0 0 1 28-3 11 11 0 0 1 10 12 10 10 0 0 1-4 13Z" fill="${cloud}"/>`;
-  const drops = `<g stroke="${onBlue ? "#cdd6ff" : "var(--blue)"}" stroke-width="3" stroke-linecap="round"><path d="M22 42l-2 4M32 42l-2 4M42 42l-2 4"/></g>`;
-  const flakes = `<g fill="${onBlue ? "#fff" : "var(--blue)"}"><circle cx="21" cy="44" r="2"/><circle cx="31" cy="45" r="2"/><circle cx="41" cy="44" r="2"/></g>`;
-  const bolt = `<path d="M33 30l-6 10h5l-3 8 9-12h-5l3-6Z" fill="${sunC}"/>`;
-  const fog = `<g stroke="${cloud}" stroke-width="4" stroke-linecap="round"><path d="M8 20h44M14 30h40M8 40h36"/></g>`;
+  const front = onBlue ? "url(#gCloud)" : "url(#gCloudW)";
+  const back = onBlue ? "url(#gCloudBack)" : "url(#gCloudWBack)";
+  const sunAt = (cx, cy, ro) => `<g class="sun"><path d="${starPath(cx, cy, ro, ro * .82)}" fill="url(#gSun)" stroke="url(#gSun)" stroke-width="3" stroke-linejoin="round"/><circle cx="${cx}" cy="${cy}" r="${(ro * .64).toFixed(1)}" fill="url(#gSunCore)"/></g>`;
+  const moonAt = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><path class="moonb" d="M20 2a18 18 0 1 0 16 27A15 15 0 0 1 20 2Z" fill="url(#gMoon)"/><path class="twinkle" d="M40 6l1.2 2.8L44 10l-2.8 1.2L40 14l-1.2-2.8L36 10l2.8-1.2Z" fill="#d9ccff"/></g>`;
+  const bigCloud = (dy = 0) => `<g transform="translate(0 ${dy})"><path class="cloud" d="${CLOUD_BIG}" transform="translate(13 -9) scale(.72)" fill="${back}"/><path class="cloud" d="${CLOUD_BIG}" fill="${front}" filter="url(#fSoft)"/></g>`;
+  const smallCloud = `<path class="cloud" d="${CLOUD_SMALL}" transform="translate(9 6) scale(.86)" fill="${front}" filter="url(#fSoft)"/>`;
+  const drop = (x, y) => `<path class="drop" d="M${x} ${y}c2 3 3 4.6 3 6a3 3 0 0 1-6 0c0-1.4 1-3 3-6Z" fill="url(#gDrop)"/>`;
+  const flake = (x, y) => `<circle class="flake" cx="${x}" cy="${y}" r="2.4" fill="${onBlue ? "#fff" : "#a9b9ee"}"/>`;
+  const bolt = `<path class="bolt" d="M35 29l-8 11h6l-3 8 10-12h-6l3-7Z" fill="url(#gBolt)" filter="url(#fGlow)"/>`;
+  const fogLine = (x1, x2, y) => `<path class="fogl" d="M${x1} ${y}H${x2}" stroke="${front}" stroke-width="5" stroke-linecap="round"/>`;
   const parts = {
-    sun: `<g transform="translate(8 6)">${sun}</g>`,
-    moon: `<g transform="translate(4 4)">${moon}</g>`,
-    cloudsun: sun + smallCloud,
-    cloudmoon: `<g transform="translate(-6 -2)">${moon}</g>` + smallCloud,
-    cloud: bigCloud,
-    rain: `<g transform="translate(0 -4)">${bigCloud}</g>` + drops,
-    storm: `<g transform="translate(0 -6)">${bigCloud}</g>` + bolt,
-    snow: `<g transform="translate(0 -4)">${bigCloud}</g>` + flakes,
-    fog
+    sun: sunAt(32, 24, 19),
+    moon: moonAt(10, 4, 1),
+    cloudsun: sunAt(24, 17, 14) + smallCloud,
+    cloudmoon: moonAt(2, 0, .8) + smallCloud,
+    cloud: bigCloud(),
+    rain: bigCloud(-5) + `<g>${drop(24, 38)}${drop(33, 40)}${drop(42, 38)}</g>`,
+    storm: bigCloud(-6) + bolt,
+    snow: bigCloud(-5) + `<g>${flake(24, 42)}${flake(33, 44)}${flake(42, 42)}</g>`,
+    fog: bigCloud(-8) + `<g>${fogLine(10, 46, 40)}${fogLine(18, 54, 46)}</g>`
   };
-  return `<svg viewBox="0 0 64 48" aria-hidden="true">${parts[kind] || parts.cloud}</svg>`;
+  return `<svg class="anim" viewBox="0 0 64 48" overflow="visible" aria-hidden="true">${parts[kind] || parts.cloud}</svg>`;
+}
+// Farbe pro Wetter: [hell, Akzent, zart]. Der Akzent färbt die ganze App.
+const SKY = {
+  sun: ["#6ec6fa", "#2f86ea", "#e3f2fd"],
+  cloudsun: ["#58a4f5", "#3366e0", "#e6eefc"],
+  cloud: ["#7584f4", "#4655e2", "#e9ebfd"],
+  fog: ["#8a96d6", "#5864b2", "#eceef8"],
+  rain: ["#7562ea", "#4b39c4", "#ece9fc"],
+  storm: ["#6559ec", "#3a2ebf", "#e9e7fb"],
+  snow: ["#8fa0f7", "#5566e4", "#eceffd"],
+  moon: ["#6a3ae0", "#3b1aa6", "#ede7fb"],
+  cloudmoon: ["#6a3ae0", "#3b1aa6", "#ede7fb"],
+  base: ["#4a66ff", "#2747e8", "#e9edff"]
+};
+function applySky(kind) {
+  const [light, accent, soft] = SKY[kind] || SKY.base;
+  const r = document.documentElement.style;
+  r.setProperty("--sky1", light); r.setProperty("--blue", accent); r.setProperty("--blue-soft", soft);
 }
 function wxKind(code, day) {
   if (code >= 95) return "storm";
@@ -551,17 +656,15 @@ function recommend(s, w) {
   return { items, hints, stop: hints.some(h => h.stop) };
 }
 
-// Kleine Zusatzzeile zur Regel, nur für die Jogging-Oberteile.
-function ruleNote(item, w) {
-  if (S.sport !== "run" || !w) return "";
-  if (item.full === "Langarm-Laufshirt") return "tiefste Temperatur " + Math.round(w.min) + " °C, unter 17 °C";
-  if (item.full === "Kurzarm-Laufshirt") return "über 17 °C";
-  if (item.short === "Hoodie") return "unter 10 °C";
-  return "";
-}
-
 // ---------- Hilfen ----------
 const $ = id => document.getElementById(id);
+function setHTML(id, html) { const el = $(id); if (el.innerHTML !== html) el.innerHTML = html; }
+function setText(id, text, animate) {
+  const el = $(id);
+  if (el.textContent === text) return;
+  el.textContent = text;
+  if (animate) { el.classList.remove("enter"); void el.offsetWidth; el.classList.add("enter"); }
+}
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const tagText = short => short.includes(":") ? short.split(":")[0] : short;
 function clock(epoch) {
@@ -655,11 +758,11 @@ function renderHours(start, end) {
     if (t >= first && t <= last && cols.length < 8) {
       const on = t + 3600 > start && t < end;
       const code = h.weather_code[i];
-      cols.push(`<div class="h${on ? " on" : ""}"><b>${clock(t)}</b><span class="lbl">${weatherWord(code)}</span>${wxIcon(wxKind(code, h.is_day[i]), on)}<span class="t">${Math.round(h.temperature_2m[i])}°</span></div>`);
+      cols.push(`<div class="h${on ? " on" : ""}"><b>${clock(t)}</b>${wxIcon(wxKind(code, h.is_day[i]), on)}<span class="t">${Math.round(h.temperature_2m[i])}°</span></div>`);
     }
   });
   $("hours").hidden = !cols.length;
-  $("hours").innerHTML = cols.join("");
+  setHTML("hours", cols.join(""));
 }
 
 function render() {
@@ -673,14 +776,15 @@ function render() {
 
   if (!m || m.error) {
     $("datePill").textContent = dateLabel(Date.now() / 1000);
-    $("heroIcon").innerHTML = wxIcon("cloud", true);
+    applySky("cloud");
+    setHTML("heroIcon", wxIcon("cloud", true));
     $("temp").textContent = "–°"; $("temp").className = "big";
     $("heroSub").textContent = loading ? "Lade Wetter …" : "Keine Daten";
     card.className = "card verdict empty";
     $("tag").textContent = loading ? "Moment" : "Offline";
     $("verdict").textContent = loading ? "…" : "Kein Wetter";
     $("vsub").textContent = loading ? "Lade Wetter für " + S.place.name + " …" : ((raw && raw.error) || (m && m.error) || "Noch keine Daten.");
-    $("hints").innerHTML = ""; $("hours").hidden = true; $("facts").innerHTML = "";
+    $("vnotes").innerHTML = ""; $("hours").hidden = true;
     $("outfit").innerHTML = ""; $("outfitTitle").hidden = true; $("outfit").hidden = true;
     status.textContent = loading ? "" : "Mit Netz neu laden.";
     $("fine").innerHTML = fineText(null);
@@ -694,11 +798,14 @@ function render() {
 
   // Wetterkarte
   if (w) {
-    $("heroIcon").innerHTML = wxIcon(wxKind(w.current.weather_code, w.current.is_day), true);
-    $("temp").textContent = Math.round(w.current.temperature_2m) + "°"; $("temp").className = "big";
-    $("heroSub").textContent = "Gefühlt " + Math.round(w.current.apparent_temperature) + "° · " + weatherWord(w.current.weather_code);
+    const kind = wxKind(w.current.weather_code, w.current.is_day);
+    applySky(kind);
+    setHTML("heroIcon", wxIcon(kind, true));
+    setText("temp", Math.round(w.current.temperature_2m) + "°", true); $("temp").className = "big";
+    $("heroSub").textContent = weatherWord(w.current.weather_code) + " · gefühlt " + Math.round(w.feel) + "°";
   } else {
-    $("heroIcon").innerHTML = `<span style="color:#fff">${svg("swim", 'width="84" height="84"')}</span>`;
+    applySky("base");
+    setHTML("heroIcon", `<span style="color:#fff">${sportIcon("swim", 'width="84" height="84"')}</span>`);
     $("temp").textContent = "Hallenbad"; $("temp").className = "big word";
     $("heroSub").textContent = "Kein Wetter nötig";
   }
@@ -709,48 +816,36 @@ function render() {
     const first = rec.hints[0];
     card.className = "card verdict stop";
     $("tag").textContent = tagText(first.short);
-    $("verdict").textContent = "VERSCHIEBEN";
-    $("vsub").textContent = first.full;
+    setText("verdict", "VERSCHIEBEN", true);
+    $("vsub").textContent = span + " · besser drinnen";
   } else if (rec.hints.length) {
     card.className = "card verdict warn";
     $("tag").textContent = tagText(rec.hints[0].short);
-    $("verdict").textContent = "RAUS";
+    setText("verdict", "RAUS", true);
     $("vsub").textContent = span + " · mit Hinweis";
   } else {
     card.className = "card verdict";
     $("tag").textContent = "Jetzt";
-    $("verdict").textContent = "RAUS";
+    setText("verdict", "RAUS", true);
     $("vsub").textContent = span + " · passt";
   }
 
-  // Hinweise (der erste steckt bei VERSCHIEBEN schon in der Karte)
-  const shown = rec.stop ? rec.hints.slice(1) : rec.hints;
-  $("hints").innerHTML = shown.map(h =>
-    `<div class="card hint${h.stop ? " stop" : ""}"><span class="ic">${svg(h.symbol)}</span><span>${esc(h.full)}</span></div>`).join("");
+  // Hinweise als kurze Notizen in der Karte (der erste steckt schon im Tag)
+  const notes = rec.hints.slice(1, 3).map(h => `<span class="note">${svg(h.symbol)}${esc(h.short)}</span>`);
+  if (w && !rec.stop) notes.push(`<span class="note">${svg("wind")}Böen ${Math.round(w.gust)} km/h · Regen ${Math.round(w.rainChance)}&nbsp;%</span>`);
+  setHTML("vnotes", notes.join(""));
 
   // Stunden
   if (w) renderHours(start, end); else $("hours").hidden = true;
 
   // Outfit
   $("outfitTitle").textContent = rec.stop ? "Falls du trotzdem gehst" : "Anziehen & mitnehmen";
-  $("outfit").className = "card outfit" + (rec.stop ? " dim" : "");
-  $("outfit").innerHTML = rec.items.map(i => {
-    const note = ruleNote(i, w);
-    return `<li class="o${i.symbol.startsWith("cloud.rain") ? " rain" : ""}"><span class="ic">${svg(i.symbol)}</span><span>${esc(i.full)}${note ? `<span class="sub">${esc(note)}</span>` : ""}</span></li>`;
-  }).join("");
-
-  // Werte
-  if (w) {
-    const f = (icon, label, value, light) =>
-      `<div class="f"><span class="c${light ? " light" : ""}">${svg(icon)}</span>${label}<b>${value}</b></div>`;
-    $("facts").innerHTML =
-      f("umbrella", "REGEN", Math.round(w.rainChance) + " %") +
-      f("wind", "WIND", Math.round(w.wind) + " km/h") +
-      f("waves", "BÖEN", Math.round(w.gust) + " km/h") +
-      f("thermo", "GEFÜHLT", Math.round(w.feel) + " °C", true);
-  } else {
-    $("facts").innerHTML = "";
-  }
+  $("outfit").className = "outfit" + (rec.stop ? " dim" : "");
+  setHTML("outfit", rec.items.map(i => {
+    // Detail nur, wenn es etwas Neues sagt (warm, dünn, leicht …)
+    const det = /^(Warm|Dünn|Leicht|Thermo|Winddicht)/.test(i.full) && i.full !== i.short ? `<span class="det">${esc(i.full)}</span>` : "";
+    return `<li class="o${i.symbol.startsWith("cloud.rain") ? " rain" : ""}"><span class="ic">${svg(i.symbol)}</span><span class="txt"><span class="name">${esc(i.short)}</span>${det}</span></li>`;
+  }).join(""));
 
   // Stand
   if (raw && raw.source === "sample") {
@@ -760,7 +855,7 @@ function render() {
     status.textContent = "Offline · Stand " + clock(w.current.time) + (m.stale ? " · Empfehlung für diesen Zeitpunkt" : "");
     status.className = "status warn";
   } else if (w) {
-    status.textContent = (loading ? "Aktualisiere … " : "") + "Wetterstand " + clock(w.current.time) + " · " + Math.round(w.min) + "–" + Math.round(w.max) + " °C im Fenster";
+    status.textContent = (loading ? "Aktualisiere … " : "") + "Wetterstand " + clock(w.current.time);
   } else {
     status.textContent = "";
   }
@@ -862,6 +957,8 @@ $("saveSettings").addEventListener("click", () => {
 // ---------- Start ----------
 render();
 refresh();
+// Zeitfenster jede Minute nachführen, Wetter alle 10 Minuten neu holen, solange die App offen ist.
+setInterval(() => { if (document.visibilityState === "visible") { render(); refresh(); } }, 60000);
 if ("serviceWorker" in navigator && !IN_FRAME) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 }

@@ -1,6 +1,6 @@
 // RAUS Service Worker: App-Shell offline, Wetter immer frisch (Cache macht die App selbst).
-const VERSION = "raus-v5";
-const SHELL = ["/", "/raus-index.html", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png"];
+const VERSION = "raus-v14";
+const SHELL = ["/", "/raus-index.html", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
